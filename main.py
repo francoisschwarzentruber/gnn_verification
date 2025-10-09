@@ -79,6 +79,10 @@ class VerificationTask:
         x = self._get_new_featurename()
         self._addLineInMain(f"feature({x});")
         return x
+    
+    
+    def get_last_feature(self) -> str:
+        return self.features[-1]
         
     def add_precondition(self, precondition: str) -> None:
         """ add a precondition
@@ -182,72 +186,38 @@ def justRunATest():
     T.check()
 
 
-def testSmallGNN():
+
+
+
+def testGNN():
+    dimension = 2
+    nb_layers = 2
+    max_nb_vertices = 6
     with open("log.txt", "a") as f:
-        for N in range(1, 7):
+        f.write(f"# test with dimension {dimension}, nb of layers = {nb_layers}\n");
+        for N in range(1, max_nb_vertices+1):
             start = time.time()
             T = VerificationTask(Nbound = N)
-            T.add_input_feature()
-            T.add_input_feature()
-            T.add_input_feature()
+            for i in range(dimension):
+                x = T.add_input_feature()
+                for v in range(N):
+                    T.add_precondition(f"{x}[{v}] == 0 || {x}[{v}] == 1")
+                               
+            for i in range(nb_layers):
+                Mvertex = [[random.randint(1, 10) for _ in range(dimension)] for _ in range(dimension)]
+                Magg = [[random.randint(1, 10) for _ in range(dimension)] for _ in range(dimension)]
+                Maggglobal = [[random.randint(1, 10) for _ in range(dimension)] for _ in range(dimension)]
+                biais = [random.randint(1, 10) for _ in range(dimension)]
+                T.add_layer(Mvertex, Magg, Maggglobal, biais)
 
-            T.add_precondition("x1[0] == 0")
-            T.add_precondition("x1[1] == 0")
-            T.add_precondition("x1[2] == 0")
-            T.add_precondition("x2[0] == 0")
-            T.add_precondition("x2[1] == 0")
-            T.add_precondition("x2[2] == 0")
-            T.add_precondition("x3[0] == 0 || x3[0] == 1")
-            T.add_precondition("x3[1] == 0")
-            T.add_precondition("x3[2] == 0")
-
-            T.add_layer([[2, 3, 1], [1, 0, -7]],
-                        [[2, 3, 1], [1, 0, -7]],
-                        [[2, 3, 1], [1, 0, -7]],
-                        [1, 8])
-
-            T.add_postcondition("x10[0] >= 0")
+            T.add_postcondition(f"{T.get_last_feature()}[0] >= 0")
 
             T.check()
             end = time.time()
             f.write("N = " + str(N) + ": " + str(end - start) + "s\n") 
         f.write("\n")
-
-
-
-
-def testBigGNN():
-    with open("log.txt", "a") as f:
-        for N in range(3, 6):
-            start = time.time()
-            T = VerificationTask(Nbound = N)
-            for i in range(10):
-                T.add_input_feature()
-
-            T.add_precondition("x1[0] == 0")
-            T.add_precondition("x1[1] == 0")
-            T.add_precondition("x1[2] == 0")
-            T.add_precondition("x2[0] == 0")
-            T.add_precondition("x2[1] == 0")
-            T.add_precondition("x2[2] == 0")
-            T.add_precondition("x3[0] == 0 || x3[0] == 1")
-            T.add_precondition("x3[1] == 0")
-            T.add_precondition("x3[2] == 0")
-
-            M = [[random.randint(1, 10) for _ in range(10)] for _ in range(10)]
-            v = [random.randint(1, 10) for _ in range(10)]
-            
-            for i in range(5):
-                T.add_layer(M, M, M, v)
-
-            T.add_postcondition("x10[0] >= 0")
-
-            T.check()
-            end = time.time()
-            f.write("N = " + str(N) + ": " + str(end - start) + "s\n") 
         f.write("\n")
 
 
+testGNN()
 
-#testBigGNN()
-testSmallGNN()
