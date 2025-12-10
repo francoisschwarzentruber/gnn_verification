@@ -342,8 +342,6 @@ class VerificationTaskZ3:
         x = self._add_feature()
         self._addLineInMain(f";; {x}; {out_dim + 1}th dimension")
         input_dimension = len(A[0])
-        self._addLineInMain(f";; feature for ReLU of {x}")  # todo check ReLU  
-        r = self._add_feature()  # todo check ReLU
         for i in range(self.Nbound):
             self._addLineInMain(f";; {x}z{i}")            
             self._addLineInMain(f"(assert (= {x}z{i}")
@@ -364,6 +362,7 @@ class VerificationTaskZ3:
             self._addLineInMain(f"  " + ")"*(2 + 3*input_dimension))  # close all parentheses
 
     def _relu(self, feature):
+        self._addLineInMain(f";; feature for ReLU of {feature}")  # todo check ReLU
         r = self._add_feature()  # todo check ReLU
         for i in range(self.Nbound):
             self._addLineInMain(f";; ReLU of {feature}z{i}")
@@ -505,7 +504,7 @@ def simplebias(c_or_z3):
 
 
 # justRunATest()
-# testGNN("Z3", 2, 2, 6, False)  # orginal test
-# testGNN("Z3", dimension=10, nb_layers=2, max_nb_vertices=20, rand_post_cond=True)
-simple("Z3")
-simplebias("Z3")
+# testGNN("Z3", 2, 2, 6, False)  # orginal test
+testGNN("Z3", dimension=6, nb_layers=3, max_nb_vertices=20, rand_post_cond=True)
+# simple("Z3")
+# simplebias("Z3")
