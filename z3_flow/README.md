@@ -2,7 +2,7 @@
 Our goal is to translate an Aggregate Combine Graph Neural Network with the global Readout (ACR-GNN) to the code that we can pass trought Z3 solver
 
 ## Graph Neeural Network
-In this code we are using the reference architecture of the paper of the Barcelo et al[1] with the implementation[2].
+In this code we are using the reference architecture of the paper of the Barcelo et. al.[1] with the implementation[2].
 
 ## Logic
 For the Logic that we can use to verify chosen models is the modal $q\mathcal{L}$ Logic that was described in the article of [3],[4].
@@ -236,6 +236,7 @@ So we create set of functions in the `main.py` to simulate the ACR-GNN.
 
 
 ## Reference
+
 [1] Pablo Barceló, Egor V. Kostylev, Mikaël Monet, Jorge Pérez, Juan L. Reutter, and Juan Pablo Silva.  
 **The Logical Expressiveness of Graph Neural Networks**, 8th International Conference on Learning Representations (ICLR), 2020.  
 Available at: [https://openreview.net/forum?id=r1lZ7AEKvB](https://openreview.net/forum?id=r1lZ7AEKvB)
@@ -248,7 +249,9 @@ Available at: [https://github.com/juanpablos/GNN-logic](https://github.com/juanp
 
 [4]
 
-[5] ESBMC solver
+[5] Menezes, R., Aldughaim, M., Farias, B., Li, X., Manino, E., Shmarov, F., Song, K., Brauße, F., Gadelha, M. R., Tihanyi, N., Korovin, K., & Cordeiro, L. C. **ESBMC 7.4: Harnessing the Power of Intervals**, TACAS, LNCS 14572, pp. 376–380. Springer,2024.  
+Available at: [https://doi.org/10.1007/978-3-031-57256-2_24](https://doi.org/10.1007/978-3-031-57256-2_24)
+    
 
 [6] De Moura, Leonardo, and Nikolaj Bjørner. **Z3: An efficient SMT solver.**,TACAS. Springer, 2008.
 Available at: [https://link.springer.com/chapter/10.1007/978-3-540-78800-3_24](https://link.springer.com/chapter/10.1007/978-3-540-78800-3_24)
