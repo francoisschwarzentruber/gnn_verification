@@ -17,9 +17,9 @@ Python program -[generate]-> C program -[parse]-> ESBMC solver -[obtain]-> Resul
 
 
 ### Flow for Z3 SMT solver
-Formal verification of Aggregation-Convolution-Readout Graph Neural Networks using SMT (Z3)[6]
+Formal verification of Aggregation-Convolution-Readout Graph Neural Networks using SMT (Z3)[6].
 
-Here we have a flow of the programms that e are using to have:
+Here we have a flow of the programms that we are using to have:
 
 Python programm -[generate]-> Z3 programm -[parse]-> Z3 solver -[obtain]-> Results SAT or non SAT.
 
@@ -31,7 +31,8 @@ Python programm -[generate]-> Z3 programm -[parse]-> Z3 solver -[obtain]-> Resul
 > - Multiple feature vectors
 > - Several activation functions: ReLU, ReLU6, trReLU, and ReLU{p}
 > - Configurable bit-vector width (default 8 bits)
-> - Automatic SMT generation, logging, model extraction,
+> - Automatic SMT generation, logging, model extraction.
+
 
 Right now we need to understands what structure of the code for the solver. For these case we took a simple ACR-GNN code. Lets split it for the peaces and code.
 
