@@ -7,12 +7,16 @@ Returns:
 """
 
 import subprocess
-import time
-import random
-from gnn_verification import validity
+from pathlib import Path
+import sys
+from pathlib import Path as PathlibPath
+
+# Add parent directory to path to import validity
+sys.path.insert(0, str(PathlibPath(__file__).parent.parent))
+
+from validity import checking_input_matrices
 
 Number = int | float
-
 
 class ESBMCVerificationTask:
     index_of_feature = 0
@@ -122,7 +126,7 @@ class ESBMCVerificationTask:
         input_dimension = len(A[0])
         output_dimension = len(A)
         # validity
-        if validity.checking_input_matrices(input_dimension, A, Magg, MaggG, b) != 'fine':
+        if checking_input_matrices(input_dimension, A, Magg, MaggG, b) != 'fine':
             raise ValueError("Something wrong. Check your input.")
 
         previousFeatures = self.features[-input_dimension:]
@@ -145,8 +149,24 @@ class ESBMCVerificationTask:
             for j in range(input_dimension):
                 self._addLineInMain(f"mul({x}, {MaggG[i][j]}, {aggGPreviousFeatures[j]});")
                 
-            self._addLineInMain(f"addCte({x}, {-b[i]});")
-            self._addLineInMain(f"reLU({x}, {x});")
+            self._addLineInMain(f"addCte({x}, {b[i][0]});")
+            if self.activation == "ReLU":
+                self._addLineInMain(f"{self.activation}({x}, {x});")
+            elif self.activation.startswith("ReLU"):
+                param_str = self.activation[4:]  # after 'ReLU'
+                if not param_str.isdigit():
+                    raise ValueError(f"Unsupported ReLU variant: {self.activation}")
+                if param_str.isdigit():
+                    param = int(param_str)
+                    self._addLineInMain(f"ReLUp({x}, {x}, {param});")
+            elif self.activation == "trReLU":
+                self._addLineInMain(f"trReLU({x}, {x});")
+            else:
+                raise ValueError(
+                    "Activation function wrong or unsupported. "
+                    "Supported: ReLU, ReLU{p} (e.g. ReLU6, ReLU2, etc.), trReLU"
+                )
+
     
     def get_last_feature(self) -> str:
         return self.features[-1]
@@ -174,82 +194,19 @@ class ESBMCVerificationTask:
 
     def check(self) -> None:
         self._endCprogram()
-        subprocess.run(["./esbmc",
-                        "--no-bounds-check", 
-                        "--no-pointer-check", 
-                        "--no-div-by-zero-check", 
-                        #"--z3",
-                        "--cvc",
-                        #"--no-unwinding-assertions", 
-                        "main.c"],
-                       stdout=subprocess.DEVNULL,
-                       stderr = subprocess.DEVNULL)
-    
+        
+        print(self.filename)
+        C_FILE  = self.filename
+        # Get the absolute path to esbmc_flow directory for includes
+        esbmc_flow_dir = str(PathlibPath(__file__).parent.absolute())
+        proc = subprocess.run(
+            ["esbmc", f"-I{esbmc_flow_dir}", str(C_FILE)],
+            capture_output=True,
+            text=True
+        )
 
-
-
-
-def justRunATest():
-    """
-    small example of how to use the tool
-    """
-    T = ESBMCVerificationTask(Nbound = 3)
-    T.add_input_feature()
-    T.add_input_feature()
-    T.add_input_feature()
-
-    T.add_precondition("x1[0] == 0")
-    T.add_precondition("x1[1] == 0")
-    T.add_precondition("x1[2] == 0")
-    T.add_precondition("x2[0] == 0")
-    T.add_precondition("x2[1] == 0")
-    T.add_precondition("x2[2] == 0")
-    T.add_precondition("x3[0] == 0 || x3[0] == 1")
-    T.add_precondition("x3[1] == 0")
-    T.add_precondition("x3[2] == 0")
-
-    T.add_layer([[2, 3, 1], [1, 0, -7]],
-                [[2, 3, 1], [1, 0, -7]],
-                [[2, 3, 1], [1, 0, -7]],
-                [1, 8])
-
-    T.add_postcondition("x10[0] >= 0")
-
-    T.check()
-
-
-
-
-
-def testGNN():
-    dimension = 2
-    nb_layers = 2
-    max_nb_vertices = 6
-    with open("log.txt", "a") as f:
-        f.write(f"# test with dimension {dimension}, nb of layers = {nb_layers}\n");
-        for N in range(1, max_nb_vertices+1):
-            start = time.time()
-            T = ESBMCVerificationTask(Nbound = N)
-            for i in range(dimension):
-                x = T.add_input_feature()
-                for v in range(N):
-                    T.add_precondition(f"{x}[{v}] == 0 || {x}[{v}] == 1")
-                               
-            for i in range(nb_layers):
-                Mvertex = [[random.randint(1, 10) for _ in range(dimension)] for _ in range(dimension)]
-                Magg = [[random.randint(1, 10) for _ in range(dimension)] for _ in range(dimension)]
-                Maggglobal = [[random.randint(1, 10) for _ in range(dimension)] for _ in range(dimension)]
-                biais = [random.randint(1, 10) for _ in range(dimension)]
-                T.add_layer(Mvertex, Magg, Maggglobal, biais)
-
-            T.add_postcondition(f"{T.get_last_feature()}[0] >= 0")
-
-            T.check()
-            end = time.time()
-            f.write("N = " + str(N) + ": " + str(end - start) + "s\n") 
-        f.write("\n")
-        f.write("\n")
-
-
-testGNN()
-
+        print("=== ESBMC STDOUT ===")
+        print(proc.stdout)
+        print("=== ESBMC STDERR ===")
+        print(proc.stderr)
+        print("RETURN CODE:", proc.returncode)

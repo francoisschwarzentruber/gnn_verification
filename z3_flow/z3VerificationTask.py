@@ -6,18 +6,16 @@ Returns:
     _type_: _description_
 """
 
-
 import subprocess
-import time
-import random
-import math
-import re 
-import numpy as np
-from pathlib import Path
-from datetime import datetime
+import sys
+from pathlib import Path as PathlibPath
+sys.path.insert(0, str(PathlibPath(__file__).parent.parent))
 
-from gnn_verification.z3_flow.support_funcitons import *
-from gnn_verification import validity
+# Add parent directory to path to import validity
+from support_funcitons import *
+from validity import checking_input_matrices
+
+
 Number = int | float
 
 class Z3VerificationTask:
@@ -99,7 +97,7 @@ class Z3VerificationTask:
                     self._addLineInMain(f"             {zero_hex}                              ;; then 0")
                     self._addLineInMain(f"             (ite (bvsle {input_feature}_{i} {cap_hex})  ;; else if x <= cap")
                     self._addLineInMain(f"                  {input_feature}_{i}                 ;;      keep x")
-                    self._addLineInMain(f"                  {cap_hex}))))")                   #      else cap
+                    self._addLineInMain(f"                  {cap_hex}))))                         ;;  else cap")
         elif self.activation == "trReLU":
             # trReLU: f(x) = min(max(0, x), 1)
             zero_hex = int_to_bv_hex(0, self.bitvect)
@@ -126,7 +124,7 @@ class Z3VerificationTask:
         input_dimension = len(C[0])
         output_dimension = len(C)
         # validity
-        if validity.checking_input_matrices(input_dimension, C, A, R, b) != 'fine':
+        if checking_input_matrices(input_dimension, C, A, R, b) != 'fine':
             raise ValueError("Something wrong. Check your input.")
         
         
@@ -294,4 +292,3 @@ class Z3VerificationTask:
         values = parse_get_value_output(get_value_text, self.bitvect)
 
         return status, values
-

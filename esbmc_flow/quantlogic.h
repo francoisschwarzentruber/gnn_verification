@@ -64,12 +64,34 @@ void mul(number r[], number scalar, number v[])
 }
 
 /**
- *  @description compute reLU to feature u and puts the result in r
+ *  @description compute ReLU to feature u and puts the result in r
  */
-void reLU(number r[], const number u[])
+void ReLU(number r[], const number u[])
 {
   for (int i = 0; i < N; i++)
     r[i] = u[i] >= 0 ? u[i] : 0;
+}
+void ReLUp(number r[], const number u[], number p)
+{
+  for (int i = 0; i < N; i++) {
+    if (u[i] < 0)
+      r[i] = 0;
+    else if (u[i] > p)
+      r[i] = p;
+    else
+      r[i] = u[i];
+  }
+}
+void trReLU(number r[], const number u[])
+{
+  for (int i = 0; i < N; i++) {
+    if (u[i] < 0)
+      r[i] = 0;
+    else if (u[i] > 1)
+      r[i] = 1;
+    else
+      r[i] = u[i];
+  }
 }
 
 /**

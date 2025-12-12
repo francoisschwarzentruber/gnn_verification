@@ -8,14 +8,14 @@ import sys
 from pathlib import Path
 
 
-from z3VerificationTask import Z3VerificationTask
+from ESBMCVerificationTask import ESBMCVerificationTask
 
 
 
-def simpleACRGNN(in_filename,in_bitvect,in_activation):
+def simpleACRGNN(in_filename,in_activation):
     nbound=2
-    in_filename= in_filename.replace('.smt',f'Nbound{nbound}_simpleACRGNN_{in_activation}.smt')
-    v = Z3VerificationTask(nbound,filename=in_filename,bitvect=in_bitvect,activation=in_activation)
+    in_filename= in_filename.replace('.c',f'Nbound{nbound}_simpleACRGNN_{in_activation}.c')
+    v = ESBMCVerificationTask(nbound,filename=in_filename,activation=in_activation)
     for i in range(nbound):
         v.add_input_feature()
     #add preconditions
@@ -40,10 +40,10 @@ def simpleACRGNN(in_filename,in_bitvect,in_activation):
         print("No model available (unsat/unknown).")
 
 
-def simpleACRGNN_bias(in_filename,in_bitvect,in_activation):
+def simpleACRGNN_bias(in_filename,in_activation):
     nbound=2
-    in_filename= in_filename.replace('.smt',f'Nbound{nbound}_simpleACRGNN_bias_{in_activation}_bit_{in_bitvect}.smt')
-    v = Z3VerificationTask(Nbound = nbound,filename=in_filename,bitvect=in_bitvect,activation=in_activation)
+    in_filename= in_filename.replace('.c',f'Nbound{nbound}_simpleACRGNN_bias_{in_activation}.c')
+    v = ESBMCVerificationTask(Nbound = nbound,filename=in_filename,activation=in_activation)
     for i in range(nbound):
         v.add_input_feature()
     #add preconditions
@@ -57,23 +57,14 @@ def simpleACRGNN_bias(in_filename,in_bitvect,in_activation):
     #add postconditions
     v.add_postcondition(f"{v.get_last_feature()}[0] == 0")
     v.check()
-    status, values = v.check()
-    print("STATUS:", status)
 
-    if status == "sat":
-        print("INTERMEDIATE VALUES:")
-        for name, val in sorted(values.items()):
-            print(f"  {name} = {val}")
-    else:
-        print("No model available (unsat/unknown).")
-
-def justRunATest(in_filename,in_bitvect,in_activation):
+def justRunATest(in_filename,in_activation):
     """
     small example of how to use the tool
     """
     nbound=3
-    in_filename= in_filename.replace('.smt',f'Nbound{nbound}_justRunATest_{in_activation}_bit_{in_bitvect}.smt')
-    T = Z3VerificationTask(Nbound = 3,filename=in_filename,bitvect=in_bitvect,activation=in_activation)
+    in_filename= in_filename.replace('.c',f'Nbound{nbound}_justRunATest_{in_activation}.c')
+    T = ESBMCVerificationTask(Nbound = 3,filename=in_filename,activation=in_activation)
     for i in range(3):
         T.add_input_feature()
     T.add_precondition("x1[0] == 0")
@@ -94,28 +85,19 @@ def justRunATest(in_filename,in_bitvect,in_activation):
                 [[1], [8]])
     T.add_postcondition(f"{T.get_last_feature()}[0] >= 0")
     T.check()
-    status, values = T.check()
-    print("STATUS:", status)
 
-    if status == "sat":
-        print("INTERMEDIATE VALUES:")
-        for name, val in sorted(values.items()):
-            print(f"  {name} = {val}")
-    else:
-        print("No model available (unsat/unknown).")
-
-def testGNN(in_filename,in_bitvect,in_activation):
+def testGNN(in_filename,in_activation):
     dimension =2 
     nb_layers = 2
     max_nb_vertices = 6
-    with open(f"results/resultsZ3/Z3log.txt", "a") as f:
+    with open(f"results/resultsESBMC/ESBMClog.txt", "a") as f:
         f.write(f"# Test started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write(f"# test with dimension {dimension}, nb of layers = {nb_layers}, bits -{in_bitvect},activation function-{in_activation}\n")
-        base = in_filename.replace(".smt", "")  
+        f.write(f"# test with dimension {dimension}, nb of layers = {nb_layers},activation function-{in_activation}\n")
+        base = in_filename.replace(".c", "")  
         for N in range(1, max_nb_vertices+1):
-            filename_N = f"{base}_Nbound{N}_testGNN_{in_activation}_bit_{in_bitvect}.smt"
+            filename_N = f"{base}_Nbound{N}_testGNN.c"
             start = time.time()
-            T = Z3VerificationTask(Nbound = N,filename=filename_N,bitvect=in_bitvect,activation=in_activation)
+            T = ESBMCVerificationTask(Nbound = N,filename=filename_N,activation=in_activation)
             for i in range(dimension):
                 x = T.add_input_feature()
                 for v in range(N):
@@ -135,15 +117,6 @@ def testGNN(in_filename,in_bitvect,in_activation):
             T.add_postcondition(f"{T.get_last_feature()}[0] >= 0")
 
             T.check()
-            status, values = T.check()
-            print("STATUS:", status)
-
-            if status == "sat":
-                print("INTERMEDIATE VALUES:")
-                for name, val in sorted(values.items()):
-                    print(f"  {name} = {val}")
-            else:
-                print("No model available (unsat/unknown).")
             end = time.time()
             f.write(f"Finished N={N} in {end - start:.4f}s\n\n") 
         f.write("\n")
@@ -155,18 +128,17 @@ def testGNN(in_filename,in_bitvect,in_activation):
 
 
 activations = ['ReLU','ReLU6','trReLU']
-folder = Path(f"results/resultsZ3")
+folder = Path(f"results/resultsESBMC")
 folder.mkdir(parents=True, exist_ok=True)
-'''
+
 for act in activations:
     folder_act = Path(f"{folder}/results_{act}")
     folder_act.mkdir(parents=True, exist_ok=True)
-    smt_path = folder_act / f"main_{act}.smt"
-    testGNN(str(smt_path), 8, act)
-
+    smt_path = folder_act / f"main_{act}.c"
+    testGNN(str(smt_path), act)
 '''
-#simpleACRGNN("main.smt",8,'ReLU')
-smt_path = folder / f"main.smt"
-simpleACRGNN_bias(str(smt_path),8,'ReLU')
-#justRunATest("main.smt",8,'ReLU')
-
+smt_path = folder / f"main.c"
+#simpleACRGNN(str(smt_path),'ReLU')
+simpleACRGNN_bias(str(smt_path),'ReLU')
+#justRunATest(str(smt_path),8,'ReLU')
+'''
