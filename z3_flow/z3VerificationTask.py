@@ -12,7 +12,7 @@ from pathlib import Path as PathlibPath
 sys.path.insert(0, str(PathlibPath(__file__).parent.parent))
 
 # Add parent directory to path to import validity
-from support_funcitons import *
+from z3_flow.support_funcitons import *
 from validity import checking_input_matrices
 
 

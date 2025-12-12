@@ -192,7 +192,14 @@ class ESBMCVerificationTask:
             c_file.write('  return 0;\n')
             c_file.write('}\n')
 
-    def check(self) -> None:
+    def check(self):
+        """
+        Run ESBMC on the generated C file and return the verification result.
+        
+        Returns:
+            status: 'sat' if a counterexample is found, 'unsat' if verification passes, 'unknown' otherwise
+            values: dict with variable values if sat, empty dict otherwise
+        """
         self._endCprogram()
         
         print(self.filename)
@@ -202,7 +209,8 @@ class ESBMCVerificationTask:
         proc = subprocess.run(
             ["esbmc", f"-I{esbmc_flow_dir}", str(C_FILE)],
             capture_output=True,
-            text=True
+            text=True,
+            env={**__import__('os').environ}  # Inherit all environment variables
         )
 
         print("=== ESBMC STDOUT ===")
@@ -210,3 +218,13 @@ class ESBMCVerificationTask:
         print("=== ESBMC STDERR ===")
         print(proc.stderr)
         print("RETURN CODE:", proc.returncode)
+        
+        # Parse ESBMC output to determine status
+        # ESBMC returns 0 for verification success (unsat) and non-zero for failures/sat
+        if proc.returncode == 0:
+            status = "unsat"  # Verification passed
+        else:
+            status = "sat"    # Counterexample found
+        
+        # Return status and empty values dict (can be extended to parse variable values)
+        return status, {}

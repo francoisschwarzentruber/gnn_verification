@@ -1,0 +1,96 @@
+# Test started: 2025-12-12 19:24:11
+# test with dimension 2, nb of layers = 2,activation function-ReLU
+Finished N=1 in 0.5965s
+
+Finished N=2 in 0.6912s
+
+Finished N=3 in 0.6854s
+
+Finished N=4 in 0.6702s
+
+Finished N=5 in 0.7920s
+
+Finished N=6 in 0.7190s
+
+
+
+# Test started: 2025-12-12 19:24:15
+# test with dimension 2, nb of layers = 2,activation function-ReLU6
+Finished N=1 in 0.7715s
+
+Finished N=2 in 0.7496s
+
+Finished N=3 in 0.6560s
+
+Finished N=4 in 0.6559s
+
+Finished N=5 in 0.6539s
+
+Finished N=6 in 0.7075s
+
+
+
+# Test started: 2025-12-12 19:24:19
+# test with dimension 2, nb of layers = 2,activation function-trReLU
+Finished N=1 in 0.6822s
+
+Finished N=2 in 0.6860s
+
+Finished N=3 in 0.6937s
+
+Finished N=4 in 0.6956s
+
+Finished N=5 in 0.6384s
+
+Finished N=6 in 0.7169s
+
+
+
+# Test started: 2025-12-12 19:25:01
+# test with dimension 2, nb of layers = 2,activation function-ReLU
+Finished N=1 in 0.6407s
+
+Finished N=2 in 0.6476s
+
+Finished N=3 in 0.6860s
+
+Finished N=4 in 0.6636s
+
+Finished N=5 in 0.6968s
+
+Finished N=6 in 0.6584s
+
+
+
+# Test started: 2025-12-12 19:25:05
+# test with dimension 2, nb of layers = 2,activation function-ReLU6
+Finished N=1 in 0.7206s
+
+Finished N=2 in 0.7292s
+
+Finished N=3 in 0.7911s
+
+Finished N=4 in 0.8248s
+
+Finished N=5 in 0.6207s
+
+Finished N=6 in 0.6487s
+
+
+
+# Test started: 2025-12-12 19:25:09
+# test with dimension 2, nb of layers = 2,activation function-trReLU
+Finished N=1 in 0.7047s
+
+Finished N=2 in 0.7127s
+
+Finished N=3 in 0.7856s
+
+Finished N=4 in 0.7102s
+
+Finished N=5 in 0.7727s
+
+Finished N=6 in 0.7102s
+
+
+
