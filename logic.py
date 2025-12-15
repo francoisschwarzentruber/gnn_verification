@@ -1,6 +1,10 @@
 """
 Convert modal qL formulas into SMT assertions.
 
+TODO:
+- handle agg and gagg expressions - see handling of modalities in Formula for how to handle variables
+- use correct Z3 addition and product, with appropriate arithmetics - possibily only binary
+- convert numbers to appropriate types
 """
 
 class Expression:
@@ -21,8 +25,12 @@ class Expression:
                 return f"(smt-add {self.left.to_smt(node, all_nodes)} {self.right.to_smt(node, all_nodes)})"
             case "prod":
                 return f"(smt-mul {self.left.to_smt(node, all_nodes)} {self.right.to_smt(node, all_nodes)})"
+            case "agg":
+                pass
+            case "gagg":
+                pass
             case _:
-                raise ValueError("Incorrect kind of expression.")
+                raise ValueError("Incorrect kind of Expression.")
 
 
 class Formula:
@@ -67,6 +75,8 @@ class Formula:
                     counting += f"(ite {self.right.to_smt(neigh, all_nodes)} 1 0) "
                 counting += ")"
                 return "(smt-geq " + counting + f" {self.left})"
+            case _:
+                raise ValueError("Incorrect kind of Formula.")
                 
 
                 
