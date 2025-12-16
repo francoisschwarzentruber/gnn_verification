@@ -11,18 +11,36 @@ from pathlib import Path
 import sys
 from pathlib import Path as PathlibPath
 
+
+import re
+
 # Add parent directory to path to import validity
 sys.path.insert(0, str(PathlibPath(__file__).parent.parent))
 
 from validity import checking_input_matrices
 
 Number = int | float
+def parse_esbmc_counterexample(text: str) -> dict[str, int]:
+    values: dict[str, int] = {}
+
+    # matches: x7[0] = -5   OR   x7[0]=-5
+    pat = re.compile(r"\b(x\d+\[\d+\])\s*=\s*(-?\d+)\b")
+
+    for m in pat.finditer(text):
+        values[m.group(1)] = int(m.group(2))
+
+    # optional: adjacency booleans like e0_1 = TRUE / FALSE
+    pat_e = re.compile(r"\b(e\d+_\d+)\s*=\s*(TRUE|FALSE)\b", re.IGNORECASE)
+    for m in pat_e.finditer(text):
+        values[m.group(1)] = 1 if m.group(2).upper() == "TRUE" else 0
+
+    return values
 
 class ESBMCVerificationTask:
     index_of_feature = 0
     
     
-    def __init__(self, Nbound = 3, type="charsaturation",filename="main.c",activation='ReLU'):
+    def __init__(self, Nbound = 2, type="charsaturation",filename="main.c",activation='ReLU'):
         """ Initialize a new verification task
 
         Args:
@@ -37,20 +55,7 @@ class ESBMCVerificationTask:
         self.activation =activation
         self.type = type
         self._headerCprogram()
-        '''
-        self.Cprogram = [f"#define Nbound {Nbound}",
-                         'unsigned int N = Nbound; //number of vertices', 
-                         f'#include "type{type}.h"',
-                          '#include "quantlogic.h"',
-                          '',
-                         "int main()",
-                         "  {",
-                          "  testNumber();", 
-                         "  for(int N1 = 1; N1 <= Nbound; N1++)", #loop over possible size of graphs
-                         "  {", # { of the for loop
-                         "    N = N1;", #assign the number of vertices N (global variable)
-                         "    unknownGraph();"]
-        '''
+        
     def _headerCprogram(self) -> None:
         """ add the header of the C program
         """
@@ -122,7 +127,7 @@ class ESBMCVerificationTask:
     def add_layer(self, A: list[list[Number]],
                   Magg: list[list[Number]], 
                   MaggG: list[list[Number]],
-                  b: list[Number]) -> None:
+                  b: list[list[Number]]) -> None:
         input_dimension = len(A[0])
         output_dimension = len(A)
         # validity
@@ -139,28 +144,28 @@ class ESBMCVerificationTask:
             self._addLineInMain(f"aggG({aggGPreviousFeatures[j]}, {previousFeatures[j]});")
 
         for i in range(output_dimension):
-            x = self._add_feature()
+            outputFeatures = self._add_feature()
             for j in range(input_dimension):
-                self._addLineInMain(f"mul({x}, {A[i][j]}, {previousFeatures[j]});")
+                self._addLineInMain(f"mul({outputFeatures}, {A[i][j]}, {previousFeatures[j]});")
                 
             for j in range(input_dimension):
-                self._addLineInMain(f"mul({x}, {Magg[i][j]}, {aggPreviousFeatures[j]});")  
+                self._addLineInMain(f"mul({outputFeatures}, {Magg[i][j]}, {aggPreviousFeatures[j]});")  
                 
             for j in range(input_dimension):
-                self._addLineInMain(f"mul({x}, {MaggG[i][j]}, {aggGPreviousFeatures[j]});")
+                self._addLineInMain(f"mul({outputFeatures}, {MaggG[i][j]}, {aggGPreviousFeatures[j]});")
                 
-            self._addLineInMain(f"addCte({x}, {b[i][0]});")
+            self._addLineInMain(f"addCte({outputFeatures}, {b[i][0]});")
             if self.activation == "ReLU":
-                self._addLineInMain(f"{self.activation}({x}, {x});")
+                self._addLineInMain(f"{self.activation}({outputFeatures}, {outputFeatures});")
             elif self.activation.startswith("ReLU"):
                 param_str = self.activation[4:]  # after 'ReLU'
                 if not param_str.isdigit():
                     raise ValueError(f"Unsupported ReLU variant: {self.activation}")
                 if param_str.isdigit():
                     param = int(param_str)
-                    self._addLineInMain(f"ReLUp({x}, {x}, {param});")
+                    self._addLineInMain(f"ReLUp({outputFeatures}, {outputFeatures}, {param});")
             elif self.activation == "trReLU":
-                self._addLineInMain(f"trReLU({x}, {x});")
+                self._addLineInMain(f"trReLU({outputFeatures}, {outputFeatures});")
             else:
                 raise ValueError(
                     "Activation function wrong or unsupported. "
@@ -215,7 +220,7 @@ class ESBMCVerificationTask:
         c_file  = self.filename
         #ESBMC = r"D:\esbmc\bin\esbmc.exe"
         INC_DIR = Path(__file__).resolve().parent  # gnn_verification/esbmc_flow
-
+        cex_file = str(Path(c_file).with_suffix(".cex.txt"))
         proc = subprocess.run(
             [
                 'esbmc',
@@ -225,24 +230,24 @@ class ESBMCVerificationTask:
                 "--no-pointer-check",
                 "--no-div-by-zero-check",
                 "--z3",
+                "--cex-output",cex_file,
                 str(Path(c_file).resolve()),
             ],
             capture_output=True,
             text=True
         )
         
-        print("=== ESBMC STDOUT ===")
-        print(proc.stdout)
-        print("=== ESBMC STDERR ===")
-        print(proc.stderr)
-        print("RETURN CODE:", proc.returncode)
-        
-        # Parse ESBMC output to determine status
-        # ESBMC returns 0 for verification success (unsat) and non-zero for failures/sat
-        if proc.returncode == 0:
-            status = "unsat"  # Verification passed
-        else:
-            status = "sat"    # Counterexample found
-        
-        # Return status and empty values dict (can be extended to parse variable values)
-        return status, {}
+        out = (proc.stdout or "") + "\n" + (proc.stderr or "")
+
+        # status detection (robust to return codes)
+        if "VERIFICATION SUCCESSFUL" in out:
+            print("ESBMC output indicates verification successful.")
+            return "unsat", {}
+        if "VERIFICATION FAILED" in out:
+            print("ESBMC output indicates verification failed. Check '.cex.txt' file to know more.")
+            # parse counterexample either from file (preferred) or from output text
+            text = Path(cex_file).read_text(errors="ignore") if Path(cex_file).exists() else out
+            values = parse_esbmc_counterexample(text)  # implement below
+            return "sat", values
+
+        return "unknown", {}
