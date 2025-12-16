@@ -1,0 +1,12 @@
+simpleACRGNN_bias with ReLU the result: sat
+
+ 
+
+simpleACRGNN_bias with ReLU6 the result: sat
+
+ 
+
+simpleACRGNN_bias with trReLU the result: sat
+
+ 
+

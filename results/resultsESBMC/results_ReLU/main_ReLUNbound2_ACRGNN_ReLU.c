@@ -6,7 +6,7 @@ unsigned int N = Nbound; //number of vertices
 int main()
   {
   testNumber();
-  for(int N1 = 0; N1 <= Nbound; N1++)
+  for(int N1 = 1; N1 <= Nbound; N1++)
   {
     N = N1;
     unknownGraph();
@@ -31,9 +31,9 @@ int main()
     mul(x7, 0, x4);
     mul(x7, 0, x5);
     mul(x7, 0, x6);
-    addCte(x7, 0);
-    trReLU(x7, x7);
-    assert(x7[0] == 5);
+    addCte(x7, 5);
+    ReLU(x7, x7);
+    assert(x7[0] == 0);
   }
   return 0;
 }

@@ -1,0 +1,43 @@
+
+State 3 file E:\GitHub_Francois\gnn_verification\esbmc_flow\typecharsaturation.h line 40 column 5 function mulNumber thread 0
+----------------------------------------------------
+  result = 1 (00000000 00000000 00000000 00000001)
+
+State 4 file E:\GitHub_Francois\gnn_verification\esbmc_flow\typecharsaturation.h line 25 column 5 function sumNumber thread 0
+----------------------------------------------------
+  result = 1 (00000000 00000000 00000000 00000001)
+
+State 5 file E:\GitHub_Francois\gnn_verification\esbmc_flow\typecharsaturation.h line 40 column 5 function mulNumber thread 0
+----------------------------------------------------
+  result = 4 (00000000 00000000 00000000 00000100)
+
+State 6 file E:\GitHub_Francois\gnn_verification\esbmc_flow\typecharsaturation.h line 25 column 5 function sumNumber thread 0
+----------------------------------------------------
+  result = 5 (00000000 00000000 00000000 00000101)
+
+State 7 file E:\GitHub_Francois\gnn_verification\esbmc_flow\typecharsaturation.h line 25 column 5 function sumNumber thread 0
+----------------------------------------------------
+  result = 5 (00000000 00000000 00000000 00000101)
+
+State 8 file E:\GitHub_Francois\gnn_verification\esbmc_flow\typecharsaturation.h line 25 column 5 function sumNumber thread 0
+----------------------------------------------------
+  result = 5 (00000000 00000000 00000000 00000101)
+
+State 9 file E:\GitHub_Francois\gnn_verification\esbmc_flow\typecharsaturation.h line 25 column 5 function sumNumber thread 0
+----------------------------------------------------
+  result = 5 (00000000 00000000 00000000 00000101)
+
+State 10 file E:\GitHub_Francois\gnn_verification\esbmc_flow\typecharsaturation.h line 25 column 5 function sumNumber thread 0
+----------------------------------------------------
+  result = 5 (00000000 00000000 00000000 00000101)
+
+State 11 file E:\GitHub_Francois\gnn_verification\esbmc_flow\typecharsaturation.h line 25 column 5 function sumNumber thread 0
+----------------------------------------------------
+  result = 10 (00000000 00000000 00000000 00001010)
+
+State 12 file E:\GitHub_Francois\gnn_verification\results\resultsESBMC\results_ReLU6\main_ReLU6Nbound2_ACRGNN_ReLU6.c line 36 column 5 function main thread 0
+----------------------------------------------------
+Violated property:
+  file E:\GitHub_Francois\gnn_verification\results\resultsESBMC\results_ReLU6\main_ReLU6Nbound2_ACRGNN_ReLU6.c line 36 column 5 function main
+  assertion x7[0] == 0
+  0
