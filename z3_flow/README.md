@@ -2,7 +2,7 @@
 Our goal is to translate an Aggregate Combine Graph Neural Network with the global Readout (ACR-GNN) to the code that we can pass trought Z3 solver
 
 ## Graph Neeural Network
-In this code we are using the reference architecture of the paper of the Barcelo et. al.[1] with the implementation[2].
+In this code we are using the reference architecture of the paper of the Barcelò et. al.[1] with the implementation[2].
 
 ## Logic
 For the Logic that we can use to verify chosen models is the modal $q\mathcal{L}$ Logic that was described in the article of [3],[4].
@@ -14,7 +14,6 @@ For these experiments we are using two verification tools: ESBMC[5] and Z3[6]. S
 Here we have a flow of the programms that e are using to have:
 
 Python program -[generate]-> C program -[parse]-> ESBMC solver -[obtain]-> Result: SAT or UNSAT.
-
 
 ### Flow for Z3 SMT solver
 Formal verification of Aggregation-Convolution-Readout Graph Neural Networks using SMT (Z3)[6].
@@ -29,7 +28,7 @@ Python programm -[generate]-> Z3 programm -[parse]-> Z3 solver -[obtain]-> Resul
 > - Arbitrary graph size (parameter Nbound)
 > - Multiple layers
 > - Multiple feature vectors
-> - Several activation functions: ReLU, ReLU6, trReLU, and ReLU{p}
+> - Several activation functions: ReLU, trReLU, and ReLU{p}
 > - Configurable bit-vector width (default 8 bits)
 > - Automatic SMT generation, logging, model extraction.
 
@@ -40,10 +39,9 @@ Right now we need to understands what structure of the code for the solver. For 
 
 1. Create a class VerificationTask.
 2. Variable `index_of_feature` set default to 0. We will use it after for indexation of variables.
-2. Variable `index_of_af` set default to 0. We will use it after for indexation of variables after we applied to them the activation function. 
 <details>
   <summary>Sploiler</summary>
- With these indexes we can apply to postcondition to the feature of the last layer and also to the feature after applying the activation function. These indexes will be used to call the features.
+ With these index we can apply to postcondition to the feature of the last layer after applying the activation function. These index will be used to call the feature and be sure that all features have unique id.
 </details>
  
 
@@ -56,6 +54,7 @@ As input gets:
 - `filename` - default value set to `output.smt`.
 - `bitvect` - default value set to `8`.
 - `activation` -default value set to `ReLU`.
+- `combination scheme` -default value set to `Cx+Ay+Rz`. Note: future work
 
 Here we are working with the instancees.
 
@@ -64,13 +63,10 @@ Here we are working with the instancees.
 - `start_of_program` flag for writting the output file.
 - `bitvector` value that will be used to convert numbers to the Z3 representation
 - `features` stores all names of features
-- `activations` stores all names of features to which activation function was applied
 - `activation` store the name of the selected activation function
 - `adj_matrix()` create anadjacency matrix of unknown graph 
 
-
-
-**Create function `write_in_file`.**
+**Create function `_addLineInMain`.**
 
 Writes a given string to the specified output file. The resulting file is later consumed by the Z3 SMT solver.
 
@@ -86,15 +82,15 @@ In the `.smt` we can see the following code:
 (declare-const eij Bool)
 ```
 
-**Name feature; function `name_feature`.**
+**Name feature; function `_get_new_featurename`.**
     
 Here we are creating the unique name and storing the features that we are using.
 
 This is useful to if we want to know in the end the final feature. (we do!)
 
-**Decleare feature; function `declare_features`.**
+**Decleare feature; function `add_input_feature` and `add_feature` .**
 
-First of all , we need to understand how the name of th feature if forming. 
+First of all , we need to understand how the name of the feature is forming. 
 Each feature has:
     - the number i that depends on the variable `index_of_feature`, e.g. $x1, x2$.
     - dimendion j that depends on the `Nbound` variable, e.g. $x1[i]\text{ corresponds to } x1\_i$.
@@ -103,6 +99,8 @@ Each feature has:
 ```smt
 (declare-const x{i}{j} (_ BitVec 8))
 ```
+
+>[!Important] As can be clearly seen from the code, these functions produce the same output. The important difference is that we are comparing this code with the ESBMC-generated code, and therefore the function names must correspond.
 
 **Preconditions `add_precondition`**
 
@@ -190,14 +188,14 @@ As input, this function takes 3 matrices and vector.
 To check the validy of the input we are using the finction `checking_input_matrices`
 
 We have the scheme:
-- store the input dimension that we ge fro the C matrix in variable `input_dimension`.
+- store the input dimension that we get from the C matrix in variable `input_dimension`.
 -store the output dimension in variable `input_dimension`.
 - Look on the featurs that we are having right now.
 - `previousFeatures = self.features[-input_dimension:]` take last Nbound number of features
 - declare the local and global aggregation variables. Mark them into output file.
 - block of the matrix multiplication
 > [!Important] 
-> Encodes, for each position i = 0..Nbound-1 and each output o:
+> Encodes, for each position $i = 0 \cdots Nbound-1$ and each output o:
 > 
 >  $$u_o(i) = sum_j C[o][j] * x_j(i)+ sum_j A[o][j] * y_j(i)+ sum_j R[o][j] * z_j(i)+ b[o][0]$$
 > 
@@ -207,7 +205,7 @@ We have the scheme:
 > - aggGPreviousFeatures[j]  = base name of z_j
 > - outputFeatures[o]        = base name of u_o (e.g., "x5", "x6")
 
-- apply activation function $\alpha(u_o(i))$ via calling fnction `apply_activation`
+- apply activation function $\alpha(u_o(i))$ via calling function `apply_activation`
 
 **function `apply_activation`.**  
 Here we take an input feature, create the new feature specifically for the activation functiob via `declare_featuresAF` function and based on the selection of the supported activation functions apply them.
@@ -215,7 +213,7 @@ Here we take an input feature, create the new feature specifically for the activ
 >[!Note]
 > We support following activation functions: ReLU, ReLU{p} (e.g. ReLU6, ReLU2, etc.), trReLU.
 
-**function `obtain_last_feature`.**  
+**function `get_last_feature`.**  
 
 As was mention in the name of the function return the last feature 
 
