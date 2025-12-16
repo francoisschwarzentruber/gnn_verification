@@ -84,7 +84,8 @@ Declare the feature inside the code.
 feature(x4);
 ```
 
->[!Important] Here is the difference between these two functions. For the nput feature we need to add the additional line that this feature is unknown!
+>[!Important] 
+> Here is the difference between these two functions. For the nput feature we need to add the additional line that this feature is unknown!
 
 **Preconditions `add_precondition`**
 
@@ -131,7 +132,8 @@ We have the scheme:
 > - outputFeatures[o]        = base name of u_o (e.g., "x5", "x6")
 
 - apply activation function $\alpha(u_o(i))$. Possible options: 'ReLU', 'trReLU' and 'ReLU{param}'(e.g. ReLU6, ReLU2, etc.).
-> [!Important] The code is strictly bound to the register naming, so activation functions must be written according to the supported options. For ReLU{param}, a number can be specified after ReLU; this parameter determines the clipping threshold for the positive part of the function.
+> [!Important] 
+> The code is strictly bound to the register naming, so activation functions must be written according to the supported options. For ReLU{param}, a number can be specified after ReLU; this parameter determines the clipping threshold for the positive part of the function.
 
 **function `get_last_feature`.**  
 
