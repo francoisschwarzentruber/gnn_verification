@@ -3,9 +3,14 @@ Convert modal qL formulas into SMT assertions.
 
 TODO:
 - use correct Z3 addition and product, with appropriate arithmetics - possibily only binary
-- convert numbers to appropriate types
+- convert numbers to appropriate types - possibly adapt to bitwidth
 """
 
+SMT_ADD = "saturating-add"
+SMT_MUL = "saturating-mul"
+SMT_ZERO = "0x00"
+SMT_ONE = "0x01"
+SMT_GEQ = "bvsge"
 
 class Expression:
     def __init__(self, kind, left, right=None):
@@ -22,17 +27,17 @@ class Expression:
             case "activation":
                 return f"({self.left} {self.right.to_smt(node, all_nodes)})"
             case "sum":
-                return f"(smt-add {self.left.to_smt(node, all_nodes)} {self.right.to_smt(node, all_nodes)})"
+                return f"({SMT_ADD} {self.left.to_smt(node, all_nodes)} {self.right.to_smt(node, all_nodes)})"
             case "prod":
-                return f"(smt-mul {self.left.to_smt(node, all_nodes)} {self.right.to_smt(node, all_nodes)})"
+                return f"({SMT_MUL} {self.left.to_smt(node, all_nodes)} {self.right.to_smt(node, all_nodes)})"
             case "agg":
-                aggregation = f"(smt-add"
+                aggregation = f"({SMT_ADD}"
                 for n in all_nodes:
                     aggregation += f" (ite e{node}z{n} {self.left.to_smt(n, all_nodes)} 0)"
                 aggregation += ")"
                 return aggregation
             case "gagg":
-                aggregation = f"(smt-add"
+                aggregation = f"({SMT_ADD}"
                 for n in all_nodes:
                     aggregation += f" {self.left.to_smt(n, all_nodes)}"
                 aggregation += ")"
@@ -64,11 +69,11 @@ class Formula:
                 return disjunction
             case "diamondk":  # local graded modal logic diamond: Formula("diamondk", k, someformula)
                 """there are at least k neighbours such that..."""
-                counting = f"(smt-add"
+                counting = f"({SMT_ADD}"
                 for n in all_nodes:
                     counting += f" (ite (and e{node}z{n} {self.right.to_smt(n, all_nodes)}) 1 0)"
                 counting += ")"
-                return "(smt-geq " + counting + f" {self.left})"
+                return f"({SMT_GEQ} " + counting + f" {self.left})"
             case "gdiamond":  # global modal logic diamond: Formula("gdiamond", someformula)
                 """there is at least one node such that..."""
                 disjunction = f"(or"
@@ -78,11 +83,11 @@ class Formula:
                 return disjunction
             case "gdiamondk":  # global graded modal logic diamond: Formula("gdiamondk", k, someformula)
                 """there are at least k nodes such that..."""
-                counting = f"(smt-add"
+                counting = f"({SMT_ADD}"
                 for n in all_nodes:
                     counting += f" (ite {self.right.to_smt(n, all_nodes)} 1 0)"
                 counting += ")"
-                return "(smt-geq " + counting + f" {self.left})"
+                return f"({SMT_GEQ} " + counting + f" {self.left})"
             case _:
                 raise ValueError("Incorrect kind of Formula.")
 
