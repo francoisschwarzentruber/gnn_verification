@@ -1,6 +1,10 @@
 """
 Convert modal qL formulas into SMT assertions.
 
+Assumptions:
+- operations with qL expressions follow a quantized arithmetics
+- counting neighbours with graded modal logic is done with more standard arithmetics
+
 TODO:
 - use correct Z3 addition and product, with appropriate arithmetics - possibily only binary
 - convert numbers to appropriate types - possibly adapt to bitwidth
@@ -11,6 +15,7 @@ SMT_MUL = "saturating-mul"
 SMT_ZERO = "#x00"
 SMT_ONE = "#x01"
 SMT_GEQ = "bvsge"
+
 
 class Expression:
     def __init__(self, kind, left, right=None):
@@ -55,7 +60,7 @@ class Formula:
     def to_smt(self, node, all_nodes):
         match self.kind:
             case "geq":
-                return f"(>= {self.left.to_smt(node, all_nodes)} {self.right.to_smt(node, all_nodes)})"
+                return f"({SMT_GEQ} {self.left.to_smt(node, all_nodes)} {self.right.to_smt(node, all_nodes)})"
             case "not":
                 return f"(not {self.left.to_smt(node, all_nodes)})"
             case "or":
@@ -71,9 +76,9 @@ class Formula:
                 """there are at least k neighbours such that..."""
                 counting = f"({SMT_ADD}"
                 for n in all_nodes:
-                    counting += f" (ite (and e{node}z{n} {self.right.to_smt(n, all_nodes)}) {SMT_ONE} {SMT_ZERO})"
+                    counting += f" (ite (and e{node}z{n} {self.right.to_smt(n, all_nodes)}) 1 0)"
                 counting += ")"
-                return f"({SMT_GEQ} " + counting + f" {self.left})"
+                return f"(>= " + counting + f" {self.left})"
             case "gdiamond":  # global modal logic diamond: Formula("gdiamond", someformula)
                 """there is at least one node such that..."""
                 disjunction = f"(or"
@@ -85,9 +90,9 @@ class Formula:
                 """there are at least k nodes such that..."""
                 counting = f"({SMT_ADD}"
                 for n in all_nodes:
-                    counting += f" (ite {self.right.to_smt(n, all_nodes)} {SMT_ONE} {SMT_ZERO})"
+                    counting += f" (ite {self.right.to_smt(n, all_nodes)} 1 0)"
                 counting += ")"
-                return f"({SMT_GEQ} " + counting + f" {self.left})"
+                return f"(>= " + counting + f" {self.left})"
             case _:
                 raise ValueError("Incorrect kind of Formula.")
 
