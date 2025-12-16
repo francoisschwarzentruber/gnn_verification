@@ -21,7 +21,7 @@ def simpleACRGNN(in_filename,in_activation):
     #add preconditions
     v.add_precondition("x1[0] == 1")
     v.add_precondition("x2[0] == 2")
-    #add layer with the C, A, R ,b matrices
+    #add layer with the C, A, R ,b matrices  
     v.add_layer([[1, 2]],
                 [[0, 0]],
                 [[0, 0]],
@@ -55,7 +55,7 @@ def simpleACRGNN_bias(in_filename,in_activation):
                 [[0, 0]],
                 [[5]])
     #add postconditions
-    v.add_postcondition(f"{v.get_last_feature()}[0] == 0")
+    v.add_postcondition(f"{v.get_last_feature()}[0] == 5")
     v.check()
 
 def justRunATest(in_filename,in_activation):
@@ -130,7 +130,7 @@ def testGNN(in_filename,in_activation):
 activations = ['ReLU','ReLU6','trReLU']
 folder = Path(f"results/resultsESBMC")
 folder.mkdir(parents=True, exist_ok=True)
-
+'''
 for act in activations:
     folder_act = Path(f"{folder}/results_{act}")
     folder_act.mkdir(parents=True, exist_ok=True)
@@ -141,4 +141,4 @@ smt_path = folder / f"main.c"
 #simpleACRGNN(str(smt_path),'ReLU')
 simpleACRGNN_bias(str(smt_path),'ReLU')
 #justRunATest(str(smt_path),8,'ReLU')
-'''
+

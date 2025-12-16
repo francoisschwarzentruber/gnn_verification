@@ -71,28 +71,33 @@ void ReLU(number r[], const number u[])
   for (int i = 0; i < N; i++)
     r[i] = u[i] >= 0 ? u[i] : 0;
 }
+
 void ReLUp(number r[], const number u[], number p)
 {
   for (int i = 0; i < N; i++) {
-    if (u[i] < 0)
+    if (u[i] < 0) {
       r[i] = 0;
-    else if (u[i] > p)
+    } else if (u[i] > p) {
       r[i] = p;
-    else
+    } else {
       r[i] = u[i];
+    }
   }
 }
+
 void trReLU(number r[], const number u[])
 {
   for (int i = 0; i < N; i++) {
-    if (u[i] < 0)
+    if (u[i] < 0) {
       r[i] = 0;
-    else if (u[i] > 1)
+    } else if (u[i] > 1) {
       r[i] = 1;
-    else
+    } else {
       r[i] = u[i];
+    }
   }
 }
+
 
 /**
  * @description compute the aggregation (sum) of feature f on the neighbor and aggregate it in r

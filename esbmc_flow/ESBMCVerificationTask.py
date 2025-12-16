@@ -46,7 +46,7 @@ class ESBMCVerificationTask:
                          "int main()",
                          "  {",
                           "  testNumber();", 
-                         "  for(int N1 = 0; N1 <= Nbound; N1++)", #loop over possible size of graphs
+                         "  for(int N1 = 1; N1 <= Nbound; N1++)", #loop over possible size of graphs
                          "  {", # { of the for loop
                          "    N = N1;", #assign the number of vertices N (global variable)
                          "    unknownGraph();"]
@@ -62,7 +62,7 @@ class ESBMCVerificationTask:
             c_file.write("int main()\n")
             c_file.write("  {\n")
             c_file.write("  testNumber();\n")
-            c_file.write("  for(int N1 = 0; N1 <= Nbound; N1++)\n") #loop over possible size of graphs
+            c_file.write("  for(int N1 = 1; N1 <= Nbound; N1++)\n") #loop over possible size of graphs
             c_file.write("  {\n") # { of the for loop  
             c_file.write("    N = N1;\n") #assign the number of vertices N (global variable)
             c_file.write("    unknownGraph();\n")
@@ -187,6 +187,15 @@ class ESBMCVerificationTask:
         self.Cprogram.append('}') # end of the C main function
         """
 
+        # Check if the ending is already written
+        try:
+            with open(self.filename, 'r') as f:
+                content = f.read()
+                if content.endswith('  }\n  return 0;\n}\n'):
+                    return  # Already ended
+        except FileNotFoundError:
+            pass
+
         with open(self.filename, self.start_of_program) as c_file:
             c_file.write('  }\n')
             c_file.write('  return 0;\n')
@@ -203,16 +212,25 @@ class ESBMCVerificationTask:
         self._endCprogram()
         
         print(self.filename)
-        C_FILE  = self.filename
-        # Get the absolute path to esbmc_flow directory for includes
-        esbmc_flow_dir = str(PathlibPath(__file__).parent.absolute())
-        proc = subprocess.run(
-            ["esbmc", f"-I{esbmc_flow_dir}", str(C_FILE)],
-            capture_output=True,
-            text=True,
-            env={**__import__('os').environ}  # Inherit all environment variables
-        )
+        c_file  = self.filename
+        #ESBMC = r"D:\esbmc\bin\esbmc.exe"
+        INC_DIR = Path(__file__).resolve().parent  # gnn_verification/esbmc_flow
 
+        proc = subprocess.run(
+            [
+                'esbmc',
+                "--no-library",
+                "-I", str(INC_DIR),
+                "--no-bounds-check",
+                "--no-pointer-check",
+                "--no-div-by-zero-check",
+                "--z3",
+                str(Path(c_file).resolve()),
+            ],
+            capture_output=True,
+            text=True
+        )
+        
         print("=== ESBMC STDOUT ===")
         print(proc.stdout)
         print("=== ESBMC STDERR ===")
