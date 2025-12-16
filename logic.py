@@ -8,8 +8,8 @@ TODO:
 
 SMT_ADD = "saturating-add"
 SMT_MUL = "saturating-mul"
-SMT_ZERO = "0x00"
-SMT_ONE = "0x01"
+SMT_ZERO = "#x00"
+SMT_ONE = "#x01"
 SMT_GEQ = "bvsge"
 
 class Expression:
@@ -33,7 +33,7 @@ class Expression:
             case "agg":
                 aggregation = f"({SMT_ADD}"
                 for n in all_nodes:
-                    aggregation += f" (ite e{node}z{n} {self.left.to_smt(n, all_nodes)} 0)"
+                    aggregation += f" (ite e{node}z{n} {self.left.to_smt(n, all_nodes)} {SMT_ZERO})"
                 aggregation += ")"
                 return aggregation
             case "gagg":
@@ -71,7 +71,7 @@ class Formula:
                 """there are at least k neighbours such that..."""
                 counting = f"({SMT_ADD}"
                 for n in all_nodes:
-                    counting += f" (ite (and e{node}z{n} {self.right.to_smt(n, all_nodes)}) 1 0)"
+                    counting += f" (ite (and e{node}z{n} {self.right.to_smt(n, all_nodes)}) {SMT_ONE} {SMT_ZERO})"
                 counting += ")"
                 return f"({SMT_GEQ} " + counting + f" {self.left})"
             case "gdiamond":  # global modal logic diamond: Formula("gdiamond", someformula)
@@ -85,7 +85,7 @@ class Formula:
                 """there are at least k nodes such that..."""
                 counting = f"({SMT_ADD}"
                 for n in all_nodes:
-                    counting += f" (ite {self.right.to_smt(n, all_nodes)} 1 0)"
+                    counting += f" (ite {self.right.to_smt(n, all_nodes)} {SMT_ONE} {SMT_ZERO})"
                 counting += ")"
                 return f"({SMT_GEQ} " + counting + f" {self.left})"
             case _:
