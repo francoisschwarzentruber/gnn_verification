@@ -9,7 +9,7 @@ def _hexa(val, num_bits):
     if (val >= 0):
         return '#' + f"{val:#0{2+math.ceil(math.log(2**num_bits, 16))}x}"[1:]
     else: # not sure this will work smoothly...
-        return '(bvsge #' + f"{val:#0{2+math.ceil(math.log(2**num_bits, 16))}x}"[1:] + ')'
+        return '(bvsge #' + f"{-val:#0{2+math.ceil(math.log(2**num_bits, 16))}x}"[1:] + ')'
     
 
 def c_to_smt(expr, num_bits):

@@ -8,6 +8,7 @@ Assumptions:
 TODO:
 - use correct Z3 addition and product, with appropriate arithmetics - possibily only binary
 - convert numbers to appropriate types - possibly adapt to bitwidth
+- in particular convert "constant" Expression
 """
 
 SMT_ADD = "saturating-add"
