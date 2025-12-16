@@ -8,7 +8,7 @@ TODO:
 
 
 class Expression:
-    def __init__(self, kind, left, right=False):
+    def __init__(self, kind, left, right=None):
         self.kind = kind
         self.left = left
         self.right = right
@@ -42,7 +42,7 @@ class Expression:
 
 
 class Formula:
-    def __init__(self, kind, left, right=False):
+    def __init__(self, kind, left, right=None):
         self.kind = kind
         self.left = left
         self.right = right
