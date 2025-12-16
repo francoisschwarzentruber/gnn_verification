@@ -262,7 +262,6 @@ class VerificationTaskZ3:
         self._addLineInMain(f";; precondition {precondition}")
         self._addLineInMain(f"(assert {c_to_smt(precondition, self.bits)})")
 
-
     def add_postcondition(self, postcondition: str) -> None:
         """We are going to check that the postcondition is always verified using satisfiability.
 
@@ -275,6 +274,13 @@ class VerificationTaskZ3:
         self._addLineInMain(f";; postcondition {postcondition}")
         self._addLineInMain(f"(assert (not {c_to_smt(postcondition, self.bits)}))")  # "(not ..." is on purpose!
 
+    def add_precondition_Formula(self, f: Formula, node) -> None:
+        self._addLineInMain(f";; precondition formula")
+        self._addLineInMain(f"(assert {f.to_smt(node, range(self.Nbound))})")
+
+    def add_postcondition_Formula(self, f: Formula) -> None:
+        self._addLineInMain(f";; postcondition formula")
+        self._addLineInMain(f"(assert (not {f.to_smt(node, range(self.Nbound))}))")  # "(not ..." is on purpose!
 
     def _writeZ3program(self) -> None:
         """ write the C program corresponding to the verification task
@@ -503,8 +509,53 @@ def simplebias(c_or_z3):
     T.check()
 
 
-# justRunATest()
-# testGNN("Z3", 2, 2, 6, False)  # orginal test
-testGNN("Z3", dimension=6, nb_layers=3, max_nb_vertices=20, rand_post_cond=True)
-# simple("Z3")
-# simplebias("Z3")
+def z3_simplebias_with_simple_formulas():
+    """
+    Same as simplebias() but with Formula (only for Z3)
+    """
+
+    from logic import Expression, Formula
+    
+    T = VTfactory("Z3", Nbound=2, bits=8)
+    T.add_input_feature()
+    T.add_input_feature()
+
+    x1 = Expression("variable", "x1")
+    x2 = Expression("variable", "x2")
+    one = Expression("constant", "#x01")
+    two = Expression("constant", "#x02")
+    geq11 = Formula("geq", x1, one)
+    geq12 = Formula("geq", one, x1)
+    geq21 = Formula("geq", x2, two)
+    geq22 = Formula("geq", two, x2)
+    f = Formula("not", Formula("or",
+                               Formula("or",
+                                       Formula("or",
+                                               Formula("not", geq11),
+                                               Formula("not", geq12)
+                                               ),
+                                       Formula("not", geq21)
+                                       ),
+                               Formula("not", geq22), 
+                               ))
+    
+    T.add_precondition_Formula(f, 0)
+
+    T.add_layer([[1, 2]],
+                [[0, 0]],
+                [[0, 0]],
+                [-5])
+
+    T.add_postcondition("x7[0] == 0")
+
+    T.check()
+    
+
+
+if __name__ == "__main__":
+    # justRunATest()
+    # testGNN("Z3", 2, 2, 6, False)  # orginal test
+    # testGNN("Z3", dimension=6, nb_layers=3, max_nb_vertices=20, rand_post_cond=True)
+    # simple("Z3")
+    # simplebias("Z3")
+    z3_simplebias_with_simple_formulas()
