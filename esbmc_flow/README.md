@@ -38,6 +38,7 @@ Python program -[generate]-> C program -[parse]-> ESBMC solver -[obtain]-> Resul
 </details>
 
 #### Phase1. Creating functions.
+
 **Create a function `__init__`.**
 As input gets:
 - `Nbound`- default value set to `2`.
@@ -71,6 +72,7 @@ Here we are creating the unique name and storing the features that we are using.
 This is useful to if we want to know in the end the final feature. (we do!)
 
 **Name feature; function `add_input_feature`.**
+
 Here we have a function that we call from the structure of the ACR-GNN. Basically, declare the feature from the input and later never.
 
 ```C
@@ -93,6 +95,7 @@ This method inserts a precondition into the encoding of the ACR-GNN verification
 A precondition is a logical constraint on existing feature variables (e.g., `x1[0] == 1, x2[3] == 0 || x2[3] == 1`).
 
 **Layer of the ACR-GNN `add_layer`**
+
 As input, this function takes 3 matrices and vector.
 - $C$, $A$, $R$ - three matrices that corresponds to $C$ - combination, $A$ - aggregation and $R$ - the readout (global aggregation).
 - $b$ - bias vector
@@ -120,6 +123,7 @@ We have the scheme:
 - `previousFeatures = self.features[-input_dimension:]` take last Nbound number of features
 - declare the local and global aggregation variables. Mark them into output file.
 - block of the matrix multiplication
+
 > [!Important] 
 > Encodes, for each position $i = 0 \cdots Nbound-1$ and each output o:
 > 
@@ -132,6 +136,7 @@ We have the scheme:
 > - outputFeatures[o]        = base name of u_o (e.g., "x5", "x6")
 
 - apply activation function $\alpha(u_o(i))$. Possible options: 'ReLU', 'trReLU' and 'ReLU{param}'(e.g. ReLU6, ReLU2, etc.).
+
 > [!Important] 
 > The code is strictly bound to the register naming, so activation functions must be written according to the supported options. For ReLU{param}, a number can be specified after ReLU; this parameter determines the clipping threshold for the positive part of the function.
 
@@ -145,9 +150,11 @@ As was mention in the name of the function return the last feature
 The same flow as Preconditon block, but we also check if the feature is exists. To prevent possivle errors to double the information we added the checker.
 
 **function `_endCprogram`.**  
+
 Added to the `.c` file the ending of the C code.
 
 **Check the model; function `check`**
+
 Run ESBMC on the generated C file and return the verification result.
 
 Returns:
