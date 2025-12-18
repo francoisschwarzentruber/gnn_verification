@@ -151,8 +151,6 @@ def convert_condition_to_smt(expr: str,features,flag, bit_width: int = 8) -> str
             return f"(assert (not (or {' '.join(smt_or_clauses)})))"
         return f"(assert (or {' '.join(smt_or_clauses)}))"
 
-
-
 def parse_get_value_output(output: str, bit_width: int) -> dict[str, int]:
     """
     Parse lines like:

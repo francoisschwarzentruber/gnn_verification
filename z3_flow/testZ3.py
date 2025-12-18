@@ -64,8 +64,10 @@ def simpleACRGNN_bias(in_filename,in_bitvect,in_activation):
         print("INTERMEDIATE VALUES:")
         for name, val in sorted(values.items()):
             print(f"  {name} = {val}")
+    elif status == "unknown":
+        print("The solver returned 'unknown', unable to determine satisfiability.")
     else:
-        print("No model available (unsat/unknown).")
+        print("unsat.")
 
 def justRunATest(in_filename,in_bitvect,in_activation):
     """

@@ -28,12 +28,46 @@ class Z3VerificationTask:
         self.bitvect = bitvect
         self.features =[]
         self.activation =activation
+        self.write_saturation_helpers()
         self.adj_matrix()
         
     def _addLineInMain(self,line):
         with open(self.filename, self.start_of_program) as smt_file:
             smt_file.write(f"{line}\n")
         self.start_of_program ="a"
+    
+    def write_saturation_helpers(self):
+        n = self.bitvect
+        max_int = (1 << (n - 1)) - 1
+        min_int = -(1 << (n - 1))
+
+        max_n = int_to_bv_hex(max_int, n)   # n-bit
+        min_n = int_to_bv_hex(min_int, n)   # n-bit (two's complement)
+
+        # 2n-bit versions (sign-extended constants)
+        # easiest: just sign-extend the n-bit literal inside SMT
+        self._addLineInMain(f";; Saturating arithmetic helpers for signed (_ BitVec {n})")
+        self._addLineInMain(f";; Saturating for addition")
+        self._addLineInMain(f"(define-fun saturating-add ((x (_ BitVec {n})) (y (_ BitVec {n}))) (_ BitVec {n})")
+        self._addLineInMain(f"  (let ((sx ((_ sign_extend {n}) x))")
+        self._addLineInMain(f"        (sy ((_ sign_extend {n}) y))")
+        self._addLineInMain(f"        (max ((_ sign_extend {n}) {max_n}))")
+        self._addLineInMain(f"        (min ((_ sign_extend {n}) {min_n})))")
+        self._addLineInMain(f"    (let ((s (bvadd sx sy)))")
+        self._addLineInMain(f"      (let ((clamped (ite (bvslt s min) min (ite (bvsgt s max) max s))))")
+        self._addLineInMain(f"        ((_ extract {n-1} 0) clamped)))))")
+        self._addLineInMain("")
+        self._addLineInMain(f";; Saturating for multiplication")
+        self._addLineInMain(f"(define-fun saturating-mul ((x (_ BitVec {n})) (y (_ BitVec {n}))) (_ BitVec {n})")
+        self._addLineInMain(f"  (let ((sx ((_ sign_extend {n}) x))")
+        self._addLineInMain(f"        (sy ((_ sign_extend {n}) y))")
+        self._addLineInMain(f"        (max ((_ sign_extend {n}) {max_n}))")
+        self._addLineInMain(f"        (min ((_ sign_extend {n}) {min_n})))")
+        self._addLineInMain(f"    (let ((p (bvmul sx sy)))")
+        self._addLineInMain(f"      (let ((clamped (ite (bvslt p min) min (ite (bvsgt p max) max p))))")
+        self._addLineInMain(f"        ((_ extract {n-1} 0) clamped)))))")
+        self._addLineInMain("")
+
 
     def adj_matrix(self):  
         self._addLineInMain(f";; adjacency matrix of unknown graph")        
@@ -136,15 +170,15 @@ class Z3VerificationTask:
         aggGPreviousFeatures = [self._add_feature() for j in range(input_dimension)]
         
         #block of local aggregation
+        zero = int_to_bv_hex(0, self.bitvect)
         for agg in range(len(aggPreviousFeatures)):
             self._addLineInMain(f";; Compute agg({aggPreviousFeatures[agg]},{previousFeatures[agg]})")
             for v in range(self.Nbound):
                 self._addLineInMain(f"(assert (= {aggPreviousFeatures[agg]}_{v}")
-                self._addLineInMain(f"          (bvadd ")
+                self._addLineInMain(f"          (saturating-add ")
                 for j in range (self.Nbound):
-                    self._addLineInMain(f"             (ite e{v}_{j} {previousFeatures[agg]}_{j} {int_to_bv_hex(0,self.bitvect)})")
+                    self._addLineInMain(f"             (ite e{v}_{j} {previousFeatures[agg]}_{j} {zero})")
                 self._addLineInMain(f"          )))") 
-
             self._addLineInMain(f";; end agg({aggPreviousFeatures[agg]},{previousFeatures[agg]})")
             self._addLineInMain(f"")
             
@@ -152,7 +186,7 @@ class Z3VerificationTask:
         for agg in range(len(aggGPreviousFeatures)):
             self._addLineInMain(f";; compute aggG({aggGPreviousFeatures[agg] },{previousFeatures[agg]})")
             args = " ".join(f"{previousFeatures[agg]}_{j}" for j in range(self.Nbound))
-            agg_term = f"(bvadd {args})"
+            agg_term = f"(saturating-add {args})"
 
             for v in range(self.Nbound):
                 self._addLineInMain(f"(assert (= {aggGPreviousFeatures[agg]}_{v}")
@@ -191,34 +225,37 @@ class Z3VerificationTask:
                 out_var = f"{out_base}_{i}"
 
                 self._addLineInMain(f"(assert (= {out_var}")
-                self._addLineInMain("         (bvadd")
+                
 
                 # C * x(i)
                 for j in range(input_dimension):
                     coef_hex = int_to_bv_hex(C[o][j], self.bitvect)
+                    self._addLineInMain(f"         (saturating-add")
                     self._addLineInMain(
-                        f"           (bvmul {previousFeatures[j]}_{i} {coef_hex})"
+                        f"           (saturating-mul {previousFeatures[j]}_{i} {coef_hex})"
                     )
 
                 # A * y(i)
                 for j in range(input_dimension):
                     coef_hex = int_to_bv_hex(A[o][j], self.bitvect)
+                    self._addLineInMain(f"         (saturating-add")
                     self._addLineInMain(
-                        f"           (bvmul {aggPreviousFeatures[j]}_{i} {coef_hex})"
+                        f"           (saturating-mul {aggPreviousFeatures[j]}_{i} {coef_hex})"
                     )
 
                 # R * z(i)
                 for j in range(input_dimension):
                     coef_hex = int_to_bv_hex(R[o][j], self.bitvect)
+                    self._addLineInMain(f"         (saturating-add")
                     self._addLineInMain(
-                        f"           (bvmul {aggGPreviousFeatures[j]}_{i} {coef_hex})"
+                        f"           (saturating-mul {aggGPreviousFeatures[j]}_{i} {coef_hex})"
                     )
 
                 # bias term b[o][0]
                 bias_hex = int_to_bv_hex(b[o][0], self.bitvect)
                 self._addLineInMain(f"           {bias_hex}")
 
-                self._addLineInMain("         )))")  # close bvadd, =, assert
+                self._addLineInMain(f"  " + ")"*(2 + 3*input_dimension))  # close all parentheses
 
             self._addLineInMain(f";; end linear layer for {out_base}")
             self._addLineInMain("")
