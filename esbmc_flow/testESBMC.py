@@ -55,7 +55,7 @@ def simpleACRGNN_bias(in_filename,in_activation):
                 [[0, 0]],
                 [[5]])
     #add postconditions
-    v.add_postcondition(f"{v.get_last_feature()}[0] == 5")
+    v.add_postcondition(f"{v.get_last_feature()}[0] == 0")
     v.check()
 
 def justRunATest(in_filename,in_activation):

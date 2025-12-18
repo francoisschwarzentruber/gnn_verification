@@ -20,6 +20,7 @@ sys.path.insert(0, str(PathlibPath(__file__).parent.parent))
 from validity import checking_input_matrices
 
 Number = int | float
+
 def parse_esbmc_counterexample(text: str) -> dict[str, int]:
     values: dict[str, int] = {}
 
