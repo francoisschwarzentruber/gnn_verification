@@ -126,7 +126,8 @@ def testGNN(in_filename,in_activation):
 
 
 
-
+ACRGNN_configurations = ['Cx+Ay+Rz+b', 'xC+yA+zR+b']
+configurations = ACRGNN_configurations[0]  #choose either 'Cx+Ay+Rz+b' or 'xC+yA+zR+b'
 activations = ['ReLU','ReLU6','trReLU']
 folder = Path(f"results/resultsESBMC")
 folder.mkdir(parents=True, exist_ok=True)

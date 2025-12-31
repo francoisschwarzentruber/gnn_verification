@@ -1,3 +1,24 @@
+;; Saturating arithmetic helpers for signed (_ BitVec 8)
+;; Saturating for addition
+(define-fun saturating-add ((x (_ BitVec 8)) (y (_ BitVec 8))) (_ BitVec 8)
+  (let ((sx ((_ sign_extend 8) x))
+        (sy ((_ sign_extend 8) y))
+        (max ((_ sign_extend 8) #x7f))
+        (min ((_ sign_extend 8) #x80)))
+    (let ((s (bvadd sx sy)))
+      (let ((clamped (ite (bvslt s min) min (ite (bvsgt s max) max s))))
+        ((_ extract 7 0) clamped)))))
+
+;; Saturating for multiplication
+(define-fun saturating-mul ((x (_ BitVec 8)) (y (_ BitVec 8))) (_ BitVec 8)
+  (let ((sx ((_ sign_extend 8) x))
+        (sy ((_ sign_extend 8) y))
+        (max ((_ sign_extend 8) #x7f))
+        (min ((_ sign_extend 8) #x80)))
+    (let ((p (bvmul sx sy)))
+      (let ((clamped (ite (bvslt p min) min (ite (bvsgt p max) max p))))
+        ((_ extract 7 0) clamped)))))
+
 ;; adjacency matrix of unknown graph
 (declare-const e0_0 Bool)
 (declare-const e0_1 Bool)
@@ -38,12 +59,12 @@
 
 ;; Compute agg(x3,x1)
 (assert (= x3_0
-          (bvadd 
+          (saturating-add 
              (ite e0_0 x1_0 #x00)
              (ite e0_1 x1_1 #x00)
           )))
 (assert (= x3_1
-          (bvadd 
+          (saturating-add 
              (ite e1_0 x1_0 #x00)
              (ite e1_1 x1_1 #x00)
           )))
@@ -51,12 +72,12 @@
 
 ;; Compute agg(x4,x2)
 (assert (= x4_0
-          (bvadd 
+          (saturating-add 
              (ite e0_0 x2_0 #x00)
              (ite e0_1 x2_1 #x00)
           )))
 (assert (= x4_1
-          (bvadd 
+          (saturating-add 
              (ite e1_0 x2_0 #x00)
              (ite e1_1 x2_1 #x00)
           )))
@@ -64,16 +85,16 @@
 
 ;; compute aggG(x5,x1)
 (assert (= x5_0
-         (bvadd x1_0 x1_1) ))
+         (saturating-add x1_0 x1_1) ))
 (assert (= x5_1
-         (bvadd x1_0 x1_1) ))
+         (saturating-add x1_0 x1_1) ))
 ;; end aggG(x5,x1)
 
 ;; compute aggG(x6,x2)
 (assert (= x6_0
-         (bvadd x2_0 x2_1) ))
+         (saturating-add x2_0 x2_1) ))
 (assert (= x6_1
-         (bvadd x2_0 x2_1) ))
+         (saturating-add x2_0 x2_1) ))
 ;; end aggG(x6,x2)
 
 ;; Calcolate (A(previousFeatures) + Magg(aggPreviousFeatures) + MaggG(aggGPreviousFeatures) + b)
@@ -83,25 +104,35 @@
 
 ;; linear layer output x7 from previous, agg, aggG (row 0)
 (assert (= x7_0
-         (bvadd
-           (bvmul x1_0 #x01)
-           (bvmul x2_0 #x02)
-           (bvmul x3_0 #x00)
-           (bvmul x4_0 #x00)
-           (bvmul x5_0 #x00)
-           (bvmul x6_0 #x00)
+         (saturating-add
+           (saturating-mul x1_0 #x01)
+         (saturating-add
+           (saturating-mul x2_0 #x02)
+         (saturating-add
+           (saturating-mul x3_0 #x00)
+         (saturating-add
+           (saturating-mul x4_0 #x00)
+         (saturating-add
+           (saturating-mul x5_0 #x00)
+         (saturating-add
+           (saturating-mul x6_0 #x00)
            #x05
-         )))
+  ))))))))
 (assert (= x7_1
-         (bvadd
-           (bvmul x1_1 #x01)
-           (bvmul x2_1 #x02)
-           (bvmul x3_1 #x00)
-           (bvmul x4_1 #x00)
-           (bvmul x5_1 #x00)
-           (bvmul x6_1 #x00)
+         (saturating-add
+           (saturating-mul x1_1 #x01)
+         (saturating-add
+           (saturating-mul x2_1 #x02)
+         (saturating-add
+           (saturating-mul x3_1 #x00)
+         (saturating-add
+           (saturating-mul x4_1 #x00)
+         (saturating-add
+           (saturating-mul x5_1 #x00)
+         (saturating-add
+           (saturating-mul x6_1 #x00)
            #x05
-         )))
+  ))))))))
 ;; end linear layer for x7
 
 ;; declare feature to store the results after applying AF
@@ -109,19 +140,15 @@
 (declare-const x8_0 (_ BitVec 8))
 (declare-const x8_1 (_ BitVec 8))
 
-;; calculate x8= trReLU(x7)
+;; calculate x8= ReLU(x7)
 (assert (= x8_0
-        (ite (bvslt x7_0 #x00)         ;; if x < 0
-             #x00                                    ;;   -> 0
-             (ite (bvsle x7_0 #x01)     ;; else if x <= 1
-                  x7_0                       ;;        -> x
-                  #x01))))                         ;; else -> 1
+        (ite (bvsge x7_0 #x00)   ;; if x_number_index >= 0 (signed)
+             x7_0                ;; keep 
+             #x00)))            ;; else return 0
 (assert (= x8_1
-        (ite (bvslt x7_1 #x00)         ;; if x < 0
-             #x00                                    ;;   -> 0
-             (ite (bvsle x7_1 #x01)     ;; else if x <= 1
-                  x7_1                       ;;        -> x
-                  #x01))))                         ;; else -> 1
+        (ite (bvsge x7_1 #x00)   ;; if x_number_index >= 0 (signed)
+             x7_1                ;; keep 
+             #x00)))            ;; else return 0
 ;; end
 
 ;; postcondition x8[0] == 0

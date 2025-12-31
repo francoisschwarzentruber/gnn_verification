@@ -41,7 +41,7 @@ class ESBMCVerificationTask:
     index_of_feature = 0
     
     
-    def __init__(self, Nbound = 2, type="charsaturation",filename="main.c",activation='ReLU'):
+    def __init__(self, Nbound = 2, type="charsaturation",filename="main.c",activation='ReLU',confifuration_matrices='Cx+Ay+Rz+b'):
         """ Initialize a new verification task
 
         Args:
@@ -56,6 +56,7 @@ class ESBMCVerificationTask:
         self.activation =activation
         self.type = type
         self._headerCprogram()
+        self.configuration_matrices = confifuration_matrices
         
     def _headerCprogram(self) -> None:
         """ add the header of the C program
@@ -133,7 +134,7 @@ class ESBMCVerificationTask:
         output_dimension = len(A)
         # validity
         if checking_input_matrices(input_dimension, A, Magg, MaggG, b) != 'fine':
-            raise ValueError("Something wrong. Check your input.")
+            raise ValueError("Something wrong. Check your input dimensions.")
 
         previousFeatures = self.features[-input_dimension:]
         

@@ -21,13 +21,15 @@ Number = int | float
 class Z3VerificationTask:
     index_of_feature=0
 
-    def __init__(self,Nbound=2, filename="main.smt",bitvect= 8,activation='ReLU'):
+    def __init__(self,Nbound=2,number_of_input_features=2, filename="main.smt",bitvect= 8,activation='ReLU',configurations='Cx+Ay+Rz+b'):
         self.Nbound = Nbound
+        self.number_of_input_features = number_of_input_features
         self.filename = filename
         self.start_of_program = "w"
         self.bitvect = bitvect
         self.features =[]
         self.activation =activation
+        self.configurations =configurations
         self.write_saturation_helpers()
         self.adj_matrix()
         
@@ -155,10 +157,10 @@ class Z3VerificationTask:
                   A: list[list[Number]], 
                   R: list[list[Number]],
                   b: list[list[Number]]):
-        input_dimension = len(C[0])
+        input_dimension = self.number_of_input_features
         output_dimension = len(C)
-        # validity
-        if checking_input_matrices(input_dimension, C, A, R, b) != 'fine':
+        # validity Nbound correspond to len of the feature vector. Number of feature vector is input_dimension
+        if checking_input_matrices(input_dimension, C, A, R, b, self.configurations) != 'fine':
             raise ValueError("Something wrong. Check your input.")
         
         
@@ -196,69 +198,134 @@ class Z3VerificationTask:
             self._addLineInMain("")
         
         #block of the matrix multiplication
-        self._addLineInMain(f";; Calcolate (A(previousFeatures) + Magg(aggPreviousFeatures) + MaggG(aggGPreviousFeatures) + b)")
-        """
-        Encodes, for each position i = 0..Nbound-1 and each output o:
+        #here the roles of C,A,R,b are defined according to the configuration
+        if self.configurations == 'Cx+Ay+Rz+b':
+            self._addLineInMain(f";; Calcolate (A(previousFeatures) + Magg(aggPreviousFeatures) + MaggG(aggGPreviousFeatures) + b)")
+            """
+            Encodes, for each position i = 0..Nbound-1 and each output o:
 
-            u_o(i) = sum_j C[o][j] * x_j(i)
-                + sum_j A[o][j] * y_j(i)
-                + sum_j R[o][j] * z_j(i)
-                + b[o][0]
+                u_o(i) = sum_j C[o][j] * x_j(i)
+                    + sum_j A[o][j] * y_j(i)
+                    + sum_j R[o][j] * z_j(i)
+                    + b[o][0]
 
-        where:
-        - previousFeatures[j]      = base name of x_j (e.g., "x1")
-        - aggPreviousFeatures[j]   = base name of y_j
-        - aggGPreviousFeatures[j]  = base name of z_j
-        - outputFeatures[o]        = base name of u_o (e.g., "x5", "x6")
-        - C, A, R have shape [k][input_dimension]
-        - b has shape [k][1]
-        """
-        
-        # create k new output feature vectors (one per row of C/A/R/b)
-        outputFeatures = [self._add_feature() for _ in range(output_dimension)]
-        
-        for o in range(output_dimension):         # for each output row (0..k-1)
-            out_base = outputFeatures[o]         # base name of output feature vector
-            self._addLineInMain(f";; linear layer output {out_base} from previous, agg, aggG (row {o})")
+            where:
+            - previousFeatures[j]      = base name of x_j (e.g., "x1")
+            - aggPreviousFeatures[j]   = base name of y_j
+            - aggGPreviousFeatures[j]  = base name of z_j
+            - outputFeatures[o]        = base name of u_o (e.g., "x5", "x6")
+            - C, A, R have shape [k][input_dimension]
+            - b has shape [k][1]
+            """
+            
+            # create k new output feature vectors (one per row of C/A/R/b)
+            outputFeatures = [self._add_feature() for _ in range(output_dimension)]
+            
+            for o in range(output_dimension):         # for each output row (0..k-1)
+                out_base = outputFeatures[o]         # base name of output feature vector
+                self._addLineInMain(f";; linear layer output {out_base} from previous, agg, aggG (row {o})")
 
-            for i in range(self.Nbound):          # for each position i
-                out_var = f"{out_base}_{i}"
+                for i in range(self.Nbound):          # for each position i
+                    out_var = f"{out_base}_{i}"
 
-                self._addLineInMain(f"(assert (= {out_var}")
-                
+                    self._addLineInMain(f"(assert (= {out_var}")
+                    
 
-                # C * x(i)
-                for j in range(input_dimension):
-                    coef_hex = int_to_bv_hex(C[o][j], self.bitvect)
-                    self._addLineInMain(f"         (saturating-add")
-                    self._addLineInMain(
-                        f"           (saturating-mul {previousFeatures[j]}_{i} {coef_hex})"
-                    )
+                    # C * x(i)
+                    for j in range(input_dimension):
+                        coef_hex = int_to_bv_hex(C[o][j], self.bitvect)
+                        self._addLineInMain(f"         (saturating-add")
+                        self._addLineInMain(
+                            f"           (saturating-mul {previousFeatures[j]}_{i} {coef_hex})"
+                        )
 
-                # A * y(i)
-                for j in range(input_dimension):
-                    coef_hex = int_to_bv_hex(A[o][j], self.bitvect)
-                    self._addLineInMain(f"         (saturating-add")
-                    self._addLineInMain(
-                        f"           (saturating-mul {aggPreviousFeatures[j]}_{i} {coef_hex})"
-                    )
+                    # A * y(i)
+                    for j in range(input_dimension):
+                        coef_hex = int_to_bv_hex(A[o][j], self.bitvect)
+                        self._addLineInMain(f"         (saturating-add")
+                        self._addLineInMain(
+                            f"           (saturating-mul {aggPreviousFeatures[j]}_{i} {coef_hex})"
+                        )
 
-                # R * z(i)
-                for j in range(input_dimension):
-                    coef_hex = int_to_bv_hex(R[o][j], self.bitvect)
-                    self._addLineInMain(f"         (saturating-add")
-                    self._addLineInMain(
-                        f"           (saturating-mul {aggGPreviousFeatures[j]}_{i} {coef_hex})"
-                    )
+                    # R * z(i)
+                    for j in range(input_dimension):
+                        coef_hex = int_to_bv_hex(R[o][j], self.bitvect)
+                        self._addLineInMain(f"         (saturating-add")
+                        self._addLineInMain(
+                            f"           (saturating-mul {aggGPreviousFeatures[j]}_{i} {coef_hex})"
+                        )
 
-                # bias term b[o][0]
-                bias_hex = int_to_bv_hex(b[o][0], self.bitvect)
-                self._addLineInMain(f"           {bias_hex}")
+                    # bias term b[o][0]
+                    bias_hex = int_to_bv_hex(b[o][0], self.bitvect)
+                    self._addLineInMain(f"           {bias_hex}")
 
-                self._addLineInMain(f"  " + ")"*(2 + 3*input_dimension))  # close all parentheses
+                    self._addLineInMain(f"  " + ")"*(2 + 3*input_dimension))  # close all parentheses
 
-            self._addLineInMain(f";; end linear layer for {out_base}")
-            self._addLineInMain("")
+                self._addLineInMain(f";; end linear layer for {out_base}")
+                self._addLineInMain("")
+        elif self.configurations == 'xC+yA+zR+b':
+            self._addLineInMain(f";; Calcolate (MpreviousFeatures(previousFeatures) + Magg(aggPreviousFeatures) + MaggG(aggGPreviousFeatures) + b)")
+            """
+            Encodes, for each position i = 0..Nbound-1 and each output o:
+
+                u_o(i) = sum_j x_j(i) * C[j][o]
+                    + sum_j y_j(i) * A[j][o]
+                    + sum_j z_j(i) * R[j][o]
+                    + b[o][0]
+            where:
+            - previousFeatures[j]      = base name of x_j (e.g., "x1")
+            - aggPreviousFeatures[j]   = base name of y_j   
+            - aggGPreviousFeatures[j]  = base name of z_j
+            - outputFeatures[o]        = base name of u_o (e.g., "x5", "x6")
+            - C, A, R have shape [input_dimension][k]
+            - b has shape [k][1]
+            """
+            # create k new output feature vectors (one per row of C/A/R/b)
+            outputFeatures = [self._add_feature() for _ in range(output_dimension)]
+            for o in range(output_dimension):         # for each output row (0..k-1)
+                out_base = outputFeatures[o]         # base name of output feature vector
+                self._addLineInMain(f";; linear layer output {out_base} from previous, agg, aggG (column {o})")
+
+                for i in range(self.Nbound):          # for each position i
+                    out_var = f"{out_base}_{i}"
+
+                    self._addLineInMain(f"(assert (= {out_var}")
+
+                    # x(i) * C
+                    for j in range(input_dimension):
+                        coef_hex = int_to_bv_hex(C[j][o], self.bitvect)
+                        self._addLineInMain(f"         (saturating-add")
+                        self._addLineInMain(
+                            f"           (saturating-mul {previousFeatures[j]}_{i} {coef_hex})"
+                        )
+
+                    # y(i) * A
+                    for j in range(input_dimension):
+                        coef_hex = int_to_bv_hex(A[j][o], self.bitvect)
+                        self._addLineInMain(f"         (saturating-add")
+                        self._addLineInMain(
+                            f"           (saturating-mul {aggPreviousFeatures[j]}_{i} {coef_hex})"
+                        )
+
+                    # z(i) * R
+                    for j in range(input_dimension):
+                        coef_hex = int_to_bv_hex(R[j][o], self.bitvect)
+                        self._addLineInMain(f"         (saturating-add")
+                        self._addLineInMain(
+                            f"           (saturating-mul {aggGPreviousFeatures[j]}_{i} {coef_hex})"
+                        )
+
+                    # bias term b[o][0]
+                    bias_hex = int_to_bv_hex(b[o][0], self.bitvect)
+                    self._addLineInMain(f"           {bias_hex}")
+
+                    self._addLineInMain(f"  " + ")"*(2 + 3*input_dimension))  # close all parentheses
+
+                self._addLineInMain(f";; end linear layer for {out_base}")
+                self._addLineInMain("")
+
+        else:
+            raise ValueError("Configuration wrong or unsupported. Supported: 'Cx+Ay+Rz+b' or 'xC+yA+zR+b'")
         #apply activation function
         for out_base in outputFeatures:
             self.apply_activation(out_base)

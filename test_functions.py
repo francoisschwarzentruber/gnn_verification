@@ -8,22 +8,22 @@ from datetime import datetime
 from esbmc_flow.ESBMCVerificationTask import ESBMCVerificationTask
 from z3_flow.z3VerificationTask import Z3VerificationTask
 
-def confifurationsmt_solver(nbound,in_filename,in_bitvect,in_activation,smt_flag):
+def confifurationsmt_solver(nbound,in_filename,in_bitvect,in_activation,smt_flag,confifuration_matrices):
     if smt_flag == 'Z3':
         in_filename= in_filename.replace('.smt',f'Nbound{nbound}_ACRGNN_{in_activation}.smt')
-        v = Z3VerificationTask(Nbound =nbound,filename=in_filename,bitvect=in_bitvect,activation=in_activation)
+        v = Z3VerificationTask(Nbound =nbound,filename=in_filename,bitvect=in_bitvect,activation=in_activation,confifuration_matrices=confifuration_matrices)
     elif smt_flag == 'ESBMC':
         in_filename= in_filename.replace('.c',f'Nbound{nbound}_ACRGNN_{in_activation}.c')
-        v = ESBMCVerificationTask(Nbound =nbound,filename=in_filename,activation=in_activation)
+        v = ESBMCVerificationTask(Nbound =nbound,filename=in_filename,activation=in_activation,confifuration_matrices=confifuration_matrices)
     else:
         raise ValueError(f"Unsupported SMT solver: {smt_flag}")
     return v
 
 
-def simpleACRGNN(in_filename,in_bitvect,in_activation,smt_flag):
+def simpleACRGNN(in_filename,in_bitvect,in_activation,smt_flag,confifuration_matrices):
     nbound=2
     
-    v=confifurationsmt_solver(nbound,in_filename,in_bitvect,in_activation,smt_flag)
+    v=confifurationsmt_solver(nbound,in_filename,in_bitvect,in_activation,smt_flag,confifuration_matrices)
 
     for i in range(nbound):
         v.add_input_feature()
@@ -51,9 +51,9 @@ def simpleACRGNN(in_filename,in_bitvect,in_activation,smt_flag):
     else:
         print("No model available (unsat/unknown).")
 
-def simpleACRGNN_bias(in_filename,in_bitvect,in_activation,smt_flag):
+def simpleACRGNN_bias(in_filename,in_bitvect,in_activation,smt_flag,confifuration_matrices):
     nbound=2
-    v=confifurationsmt_solver(nbound,in_filename,in_bitvect,in_activation,smt_flag)
+    v=confifurationsmt_solver(nbound,in_filename,in_bitvect,in_activation,smt_flag,confifuration_matrices)
 
     for i in range(nbound):
         v.add_input_feature()
@@ -82,13 +82,13 @@ def simpleACRGNN_bias(in_filename,in_bitvect,in_activation,smt_flag):
         print("No model available (unsat/unknown).")
 
 
-def justRunATest(in_filename,in_bitvect,in_activation,smt_flag):
+def justRunATest(in_filename,in_bitvect,in_activation,smt_flag,confifuration_matrices):
     """
     small example of how to use the tool
     """
     nbound=3
     
-    T=confifurationsmt_solver(nbound,in_filename,in_bitvect,in_activation,smt_flag)
+    T=confifurationsmt_solver(nbound,in_filename,in_bitvect,in_activation,smt_flag,confifuration_matrices)
 
     
     for i in range(3):
@@ -124,7 +124,7 @@ def justRunATest(in_filename,in_bitvect,in_activation,smt_flag):
     else:
         print("No model available (unsat/unknown).")
 
-def testGNN(in_dimensions,in_nb_layers,in_max_nb_vertices,in_filename,in_bitvect,in_activation,smt_flag):
+def testGNN(in_dimensions,in_nb_layers,in_max_nb_vertices,in_filename,in_bitvect,in_activation,smt_flag,confifuration_matrices):
     dimension =in_dimensions
     nb_layers = in_nb_layers
     max_nb_vertices = in_max_nb_vertices
@@ -136,7 +136,7 @@ def testGNN(in_dimensions,in_nb_layers,in_max_nb_vertices,in_filename,in_bitvect
             f.write(f"# test with dimension {dimension}, nb of layers = {nb_layers},activation function-{in_activation}\n")
         for N in range(1, max_nb_vertices+1):
             start = time.time()
-            T=confifurationsmt_solver(N,in_filename,in_bitvect,in_activation,smt_flag)
+            T=confifurationsmt_solver(N,in_filename,in_bitvect,in_activation,smt_flag,confifuration_matrices)
             for i in range(dimension):
                 x = T.add_input_feature()
                 for v in range(N):

@@ -7,16 +7,15 @@ from datetime import datetime
 import sys
 from pathlib import Path
 
-
 from z3VerificationTask import Z3VerificationTask
 
 
-
-def simpleACRGNN(in_filename,in_bitvect,in_activation):
+def simpleACRGNN(in_filename,in_bitvect,in_activation,in_configurations):
     nbound=2
+    number_of_input_features = 2
     in_filename= in_filename.replace('.smt',f'Nbound{nbound}_simpleACRGNN_{in_activation}.smt')
-    v = Z3VerificationTask(nbound,filename=in_filename,bitvect=in_bitvect,activation=in_activation)
-    for i in range(nbound):
+    v = Z3VerificationTask(nbound,number_of_input_features,filename=in_filename,bitvect=in_bitvect,activation=in_activation,configurations=in_configurations)
+    for i in range(number_of_input_features):
         v.add_input_feature()
     #add preconditions
     v.add_precondition("x1[0] == 1")
@@ -39,11 +38,10 @@ def simpleACRGNN(in_filename,in_bitvect,in_activation):
     else:
         print("No model available (unsat/unknown).")
 
-
-def simpleACRGNN_bias(in_filename,in_bitvect,in_activation):
+def simpleACRGNN_bias(in_filename,in_bitvect,in_activation,in_configurations):
     nbound=2
     in_filename= in_filename.replace('.smt',f'Nbound{nbound}_simpleACRGNN_bias_{in_activation}_bit_{in_bitvect}.smt')
-    v = Z3VerificationTask(Nbound = nbound,filename=in_filename,bitvect=in_bitvect,activation=in_activation)
+    v = Z3VerificationTask(Nbound = nbound,filename=in_filename,bitvect=in_bitvect,activation=in_activation,configurations=in_configurations)
     for i in range(nbound):
         v.add_input_feature()
     #add preconditions
@@ -69,13 +67,13 @@ def simpleACRGNN_bias(in_filename,in_bitvect,in_activation):
     else:
         print("unsat.")
 
-def justRunATest(in_filename,in_bitvect,in_activation):
+def justRunATest(in_filename,in_bitvect,in_activation,in_configurations):
     """
     small example of how to use the tool
     """
     nbound=3
     in_filename= in_filename.replace('.smt',f'Nbound{nbound}_justRunATest_{in_activation}_bit_{in_bitvect}.smt')
-    T = Z3VerificationTask(Nbound = 3,filename=in_filename,bitvect=in_bitvect,activation=in_activation)
+    T = Z3VerificationTask(Nbound = 3,filename=in_filename,bitvect=in_bitvect,activation=in_activation,configurations=in_configurations)
     for i in range(3):
         T.add_input_feature()
     T.add_precondition("x1[0] == 0")
@@ -106,7 +104,7 @@ def justRunATest(in_filename,in_bitvect,in_activation):
     else:
         print("No model available (unsat/unknown).")
 
-def testGNN(in_filename,in_bitvect,in_activation):
+def testGNN(in_filename,in_bitvect,in_activation,in_configurations):
     dimension =2 
     nb_layers = 2
     max_nb_vertices = 6
@@ -117,7 +115,7 @@ def testGNN(in_filename,in_bitvect,in_activation):
         for N in range(1, max_nb_vertices+1):
             filename_N = f"{base}_Nbound{N}_testGNN_{in_activation}_bit_{in_bitvect}.smt"
             start = time.time()
-            T = Z3VerificationTask(Nbound = N,filename=filename_N,bitvect=in_bitvect,activation=in_activation)
+            T = Z3VerificationTask(Nbound = N,filename=filename_N,bitvect=in_bitvect,activation=in_activation,configurations=in_configurations)
             for i in range(dimension):
                 x = T.add_input_feature()
                 for v in range(N):
@@ -152,9 +150,8 @@ def testGNN(in_filename,in_bitvect,in_activation):
         f.write("\n")
 
 
-
-
-
+ACRGNN_configurations = ['Cx+Ay+Rz+b', 'xC+yA+zR+b']
+configurations = ACRGNN_configurations[0]  #choose either 'Cx+Ay+Rz+b' or 'xC+yA+zR+b'
 
 activations = ['ReLU','ReLU6','trReLU']
 folder = Path(f"results/resultsZ3")
@@ -164,11 +161,10 @@ for act in activations:
     folder_act = Path(f"{folder}/results_{act}")
     folder_act.mkdir(parents=True, exist_ok=True)
     smt_path = folder_act / f"main_{act}.smt"
-    testGNN(str(smt_path), 8, act)
+    testGNN(str(smt_path), 8, act,configurations)
 
 '''
-#simpleACRGNN("main.smt",8,'ReLU')
+#simpleACRGNN("main.smt",8,'ReLU',configurations)
 smt_path = folder / f"main.smt"
-simpleACRGNN_bias(str(smt_path),8,'ReLU')
-#justRunATest("main.smt",8,'ReLU')
-
+simpleACRGNN_bias(str(smt_path),8,'ReLU',configurations)
+#justRunATest("main.smt",8,'ReLU',configurations)

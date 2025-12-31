@@ -8,6 +8,7 @@ from datetime import datetime
 from test_functions import simpleACRGNN, simpleACRGNN_bias,justRunATest, testGNN
 
 ACRGNN_configurations = ['Cx+Ay+Rz+b', 'xC+yA+zR+b']
+configurations = ACRGNN_configurations[0]  #choose either 'Cx+Ay+Rz+b' or 'xC+yA+zR+b'
 SMT= ['ESBMC','Z3']
 dimensions = 2
 nb_layers =2
@@ -38,7 +39,7 @@ for selected_smt in SMT:
             f.write(f"# model testGNN\n")
             print(f"Running testGNN with {selected_smt} and activation {act}")
             start = time.time()
-            simpleACRGNN_bias(str(smt_path),bitvect, act, selected_smt)
-            #testGNN(dimensions,nb_layers,max_nb_vertices,str(smt_path),bitvect, act, selected_smt)
+            #simpleACRGNN_bias(str(smt_path),bitvect, act, selected_smt)
+            testGNN(dimensions,nb_layers,max_nb_vertices,str(smt_path),bitvect, act, selected_smt,configurations)
             end = time.time()
             f.write(f"Finished in {end - start:.4f}s\n\n") 

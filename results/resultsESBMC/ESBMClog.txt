@@ -1,0 +1,2 @@
+# Test started: 2025-12-29 16:07:00
+# test with dimension 2, nb of layers = 2,activation function-ReLU
