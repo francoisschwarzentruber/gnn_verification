@@ -12,16 +12,16 @@ from pathlib import Path as PathlibPath
 sys.path.insert(0, str(PathlibPath(__file__).parent.parent))
 
 # Add parent directory to path to import validity
-from z3_flow.support_funcitons import *
+from z3_flow.support_functions import *
 from validity import checking_input_matrices
 
 
 Number = int | float
 
 class Z3VerificationTask:
-    index_of_feature=0
-
+    
     def __init__(self,Nbound=2,number_of_input_features=2, filename="main.smt",bitvect= 8,activation='ReLU',configurations='Cx+Ay+Rz+b'):
+        self.index_of_feature=0
         self.Nbound = Nbound
         self.number_of_input_features = number_of_input_features
         self.filename = filename
@@ -157,15 +157,24 @@ class Z3VerificationTask:
                   A: list[list[Number]], 
                   R: list[list[Number]],
                   b: list[list[Number]]):
-        input_dimension = self.number_of_input_features
-        output_dimension = len(C)
+
+        if self.configurations == 'Cx+Ay+Rz+b':
+            input_dimension = self.number_of_input_features
+            output_dimension = len(C)
+        elif self.configurations == 'xC+yA+zR+b':
+            input_dimension = self.number_of_input_features
+            output_dimension = len(C[0])
+        else:
+            raise ValueError("Configuration wrong or unsupported. Supported: 'Cx+Ay+Rz+b' or  'xC+yA+zR+b'")
+        
         # validity Nbound correspond to len of the feature vector. Number of feature vector is input_dimension
         if checking_input_matrices(input_dimension, C, A, R, b, self.configurations) != 'fine':
             raise ValueError("Something wrong. Check your input.")
         
-        
-
         previousFeatures = self.features[-input_dimension:]
+        if len(previousFeatures) != input_dimension:
+            raise ValueError("Not enough features allocated for input_dimension.")
+        
         self._addLineInMain(f";; decline features for the local aggregation.")
         aggPreviousFeatures = [self._add_feature() for j in range(input_dimension)]
         self._addLineInMain(f";; decline features for the global aggregation.")
@@ -186,7 +195,7 @@ class Z3VerificationTask:
             
         #block of global aggregation
         for agg in range(len(aggGPreviousFeatures)):
-            self._addLineInMain(f";; compute aggG({aggGPreviousFeatures[agg] },{previousFeatures[agg]})")
+            self._addLineInMain(f";; compute aggG({aggGPreviousFeatures[agg]},{previousFeatures[agg]})")
             args = " ".join(f"{previousFeatures[agg]}_{j}" for j in range(self.Nbound))
             agg_term = f"(saturating-add {args})"
 
