@@ -12,6 +12,20 @@ from pathlib import Path
 
 from z3VerificationTask import Z3VerificationTask
 
+def activation_function_mapping(act:str)->str:
+    '''
+    Map the activation function name to the corresponding representation used in the Z3VerificationTask.
+    '''
+    mapping = {
+        'relu': 'ReLU',
+        'relu6': 'ReLU6',
+        'trrelu': 'trReLU'
+    }
+    if act in mapping:
+        return mapping[act]
+    else:
+        raise ValueError(f"Unsupported activation function: {act}")
+
 
 def simpleACRGNN(in_filename,in_bitvect,in_activation,in_configurations):
     nbound=2
@@ -158,8 +172,9 @@ def trained_models(in_filename,in_configurations):
     '''
     We look on the models trained before.
     '''
-    path_to_model_folder='E:/GitHub_Francois/gnn_verification/ModelsforSMT/saved_models/results_synthetic'
-    selection='acrgnn_relu/p1/MODEL-acrgnn-0-aggS-readS-combT-cl1-L1-H16.pth'
+    path_to_model_folder='E:/GitHub_Francois/gnn_verification/ModelsforSMT/saved_models/results_synthetic_original'
+    additional_path='acrgnn_relu/p1'
+    selection=f'{additional_path}/MODEL-acrgnn-0-aggS-readS-combT-cl1-L1-H16.pth'
     selected_model = f"{path_to_model_folder}/{selection}"
     print(f"Loading model from {selected_model}")
     #extract parameters from the name of the model
@@ -200,7 +215,7 @@ def trained_models(in_filename,in_configurations):
     # add layers
     for i in range(L_value):
         # --- extract weights ---
-        W_C = state[f"convs.{i}.V.linear.weight"].detach().cpu().numpy() 
+        W_C = state[f"convs.{i}.V.linear.weight"].detach().cpu().numpy() #here float 32. float to int 32?
         b_C = state[f"convs.{i}.V.linear.bias"].detach().cpu().numpy()
 
         W_A = state[f"convs.{i}.A.linear.weight"].detach().cpu().numpy()
@@ -226,7 +241,53 @@ def trained_models(in_filename,in_configurations):
     status, values = T.check()
     print("STATUS:", status)
 
+def trained_models_quantized(in_filename,in_configurations):
+    '''
+    For this case we are usung the models that were quantized via PyTorch, dynamic PTQ from float32 to qint8
+    '''
+    path_to_model_folder='E:/GitHub_Francois/gnn_verification/ModelsforSMT/saved_models/results_synthetic'
+    additional_path='acrgnn_relu/p1'
+    selection=f'{additional_path}/MODEL-acrgnn-0-aggS-readS-combT-cl1-L1-H16-8-quantized.pth'
+    selected_model = f"{path_to_model_folder}/{selection}"
+    print(f"Loading model from {selected_model}")
+    
+    #extract parameters from the name of the model
+    #we need to know the activation function, dimension of the hidden layers, number of layers
+    act_value = additional_path.split("acrgnn_")[1].split("/")[0] #selected activation function
+    L_value = int(selection.split("-L")[1].split("-")[0]) # number of the layers
+    H_value = int(selection.split("-H")[1].split("-")[0]) # number of hidden units, dimesion of the matrices and number of the features
+    bit_value = int(selection.split("-quantized")[0].split("-")[-1]) # number of hidden units, dimesion of the matrices and number of the features
+    print(act_value, L_value, H_value,bit_value)
 
+    #covert act_value to the corresonding value for the solver
+    in_activation=activation_function_mapping(act_value)
+    # modification of the filename
+    in_filename= in_filename.replace('.smt',f'Nbound{H_value}_trained_ACRGNN_L{L_value}_H{H_value}_{act_value}.smt')
+    in_bitvect=bit_value
+
+    # state is typically an OrderedDict of parameter tensors
+    state = torch.load(selected_model, map_location="cpu")
+    
+    print("Model state dictionary:")
+    print(type(state), len(state))
+    print("keys:", list(state.keys()))
+
+    # Inspect one quantized linear packed weight + bias
+    #for example we can explore the matrix Vof the first layer
+    #keys of interest are:
+    parameters_V = ['convs.0.V.linear.scale', 'convs.0.V.linear.zero_point', 'convs.0.V.linear._packed_params.dtype', 'convs.0.V.linear._packed_params._packed_params']
+    print("Parameters of convs.0.V.linear:")
+    #for param in parameters_V:
+    #    if param in state:
+    #        print(f"  {param}: {state[param]}")
+    #    else:
+    #        print(f"  {param} not found in state dictionary.")
+    # convs.0.V.linear._packed_params._packed_params hhere we have te tensor -- weight 
+    print("tensor statistics:", state['convs.0.V.linear._packed_params._packed_params'][0].dtype, state['convs.0.V.linear._packed_params._packed_params'][0].shape)
+    print("biass statistics:", state['convs.0.V.linear._packed_params._packed_params'][1].dtype, state['convs.0.V.linear._packed_params._packed_params'][1].shape)
+
+
+    
 
 
         
@@ -252,4 +313,4 @@ simpleACRGNN_bias(str(smt_path),8,'ReLU',configurations)
 #justRunATest("main.smt",8,'ReLU',configurations)
 '''
 
-trained_models("main.smt",configurations)
+trained_models_quantized("main.smt",configurations)
