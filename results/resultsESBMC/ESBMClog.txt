@@ -1,2 +1,6 @@
-# Test started: 2025-12-29 16:07:00
-# test with dimension 2, nb of layers = 2,activation function-ReLU
+# Test started: 2026-02-11 20:11:52
+# test with dimension 16, nb of layers = 1,activation function-ReLU
+# Test started: 2026-02-11 20:20:46
+# test with dimension 16, nb of layers = 1,activation function-ReLU
+Finished N=1 in 20.6808s
+

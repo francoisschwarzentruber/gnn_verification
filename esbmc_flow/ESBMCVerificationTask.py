@@ -126,17 +126,27 @@ class ESBMCVerificationTask:
         """
         self._addLineInMain(f"__ESBMC_assume({precondition});")
 
-    def add_layer(self, A: list[list[Number]],
-                  Magg: list[list[Number]], 
-                  MaggG: list[list[Number]],
+    def add_layer(self,C: list[list[Number]],
+                  A: list[list[Number]], 
+                  R: list[list[Number]],
                   b: list[list[Number]]) -> None:
-        input_dimension = len(A[0])
-        output_dimension = len(A)
+        
+        if self.configuration_matrices == 'Cx+Ay+Rz+b':
+            input_dimension = len(C[0])
+            output_dimension = len(C)
+        elif self.configuration_matrices == 'xC+yA+zR+b':
+            input_dimension = len(C)
+            output_dimension = len(C[0])
+        else:
+            raise ValueError("Configuration wrong or unsupported. Supported: 'Cx+Ay+Rz+b' or  'xC+yA+zR+b'")
+        
         # validity
-        if checking_input_matrices(input_dimension, A, Magg, MaggG, b) != 'fine':
+        if checking_input_matrices(input_dimension, C, A, R, b,self.configuration_matrices) != 'fine':
             raise ValueError("Something wrong. Check your input dimensions.")
 
         previousFeatures = self.features[-input_dimension:]
+        if len(previousFeatures) != input_dimension:
+            raise ValueError("Not enough features allocated for input_dimension.")
         
         aggPreviousFeatures = [self._add_feature() for j in range(input_dimension)]
         aggGPreviousFeatures = [self._add_feature() for j in range(input_dimension)]
@@ -147,16 +157,30 @@ class ESBMCVerificationTask:
 
         for i in range(output_dimension):
             outputFeatures = self._add_feature()
-            for j in range(input_dimension):
-                self._addLineInMain(f"mul({outputFeatures}, {A[i][j]}, {previousFeatures[j]});")
-                
-            for j in range(input_dimension):
-                self._addLineInMain(f"mul({outputFeatures}, {Magg[i][j]}, {aggPreviousFeatures[j]});")  
-                
-            for j in range(input_dimension):
-                self._addLineInMain(f"mul({outputFeatures}, {MaggG[i][j]}, {aggGPreviousFeatures[j]});")
-                
-            self._addLineInMain(f"addCte({outputFeatures}, {b[i][0]});")
+            if self.configuration_matrices == 'Cx+Ay+Rz+b':
+                for j in range(input_dimension):
+                    self._addLineInMain(f"mul({outputFeatures}, {C[i][j]}, {previousFeatures[j]});")
+                    
+                for j in range(input_dimension):
+                    self._addLineInMain(f"mul({outputFeatures}, {A[i][j]}, {aggPreviousFeatures[j]});")  
+                    
+                for j in range(input_dimension):
+                    self._addLineInMain(f"mul({outputFeatures}, {R[i][j]}, {aggGPreviousFeatures[j]});")
+                    
+                self._addLineInMain(f"addCte({outputFeatures}, {b[i][0]});")
+            elif self.configuration_matrices == 'xC+yA+zR+b':
+                for j in range(input_dimension):
+                    self._addLineInMain(f"mul({outputFeatures}, {C[j][i]}, {previousFeatures[j]});")
+                    
+                for j in range(input_dimension):
+                    self._addLineInMain(f"mul({outputFeatures}, {A[j][i]}, {aggPreviousFeatures[j]});")  
+                    
+                for j in range(input_dimension):
+                    self._addLineInMain(f"mul({outputFeatures}, {R[j][i]}, {aggGPreviousFeatures[j]});")
+                    
+                self._addLineInMain(f"addCte({outputFeatures}, {b[0][i]});")
+            else:
+                raise ValueError("Configuration wrong or unsupported. Supported: 'Cx+Ay+Rz+b' or  'xC+yA+zR+b'")
             if self.activation == "ReLU":
                 self._addLineInMain(f"{self.activation}({outputFeatures}, {outputFeatures});")
             elif self.activation.startswith("ReLU"):

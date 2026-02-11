@@ -1,3 +1,0 @@
-# Test started: 2025-12-29 16:07:00
-# test with ,activation function-ReLU
-# model testGNN

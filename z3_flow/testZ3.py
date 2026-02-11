@@ -282,7 +282,8 @@ def trained_models_quantized(in_filename,in_configurations):
     #        print(f"  {param}: {state[param]}")
     #    else:
     #        print(f"  {param} not found in state dictionary.")
-    # convs.0.V.linear._packed_params._packed_params hhere we have te tensor -- weight 
+    # convs.0.V.linear._packed_params._packed_params h
+    # here we have te tensor -- weight 
     print("tensor statistics:", state['convs.0.V.linear._packed_params._packed_params'][0].dtype, state['convs.0.V.linear._packed_params._packed_params'][0].shape)
     print("biass statistics:", state['convs.0.V.linear._packed_params._packed_params'][1].dtype, state['convs.0.V.linear._packed_params._packed_params'][1].shape)
 
