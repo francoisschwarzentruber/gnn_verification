@@ -1,0 +1,399 @@
+sat
+(
+  (define-fun x23_0 () Float32
+    (fp #b1 #x7c #b00101110010001111010010))
+  (define-fun x11_1 () Float32
+    (fp #b0 #x80 #b10000000000000000000000))
+  (define-fun e2_3 () Bool
+    false)
+  (define-fun x55_0 () Float32
+    (fp #b1 #x80 #b10110001110010101000101))
+  (define-fun x43_1 () Float32
+    (_ +zero 8 24))
+  (define-fun x57_0 () Int
+    1)
+  (define-fun x37_1 () Float32
+    (fp #b1 #x7f #b01011010010010001001110))
+  (define-fun x44_0 () Float32
+    (fp #b0 #x80 #b01000110010111110111110))
+  (define-fun x35_2 () Float32
+    (fp #b1 #x7d #b00101111110010101101100))
+  (define-fun e0_1 () Bool
+    true)
+  (define-fun x49_1 () Float32
+    (fp #b0 #x80 #b11111110101111100101110))
+  (define-fun x10_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x19_2 () Float32
+    (fp #b0 #x7e #b00101000110001110110110))
+  (define-fun x14_1 () Float32
+    (fp #b1 #x7c #b11000111011010010110010))
+  (define-fun x10_1 () Float32
+    (fp #b0 #x80 #b10000000000000000000000))
+  (define-fun x47_2 () Float32
+    (fp #b1 #x7e #b00101110010010111111100))
+  (define-fun x10_2 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun x46_0 () Float32
+    (fp #b0 #x80 #b01000110010111110111110))
+  (define-fun x41_2 () Float32
+    (fp #b0 #x7d #b00010010000111000111100))
+  (define-fun x6_2 () Float32
+    (_ +zero 8 24))
+  (define-fun x39_0 () Float32
+    (fp #b0 #x7f #b00001001110110011001001))
+  (define-fun x6_1 () Float32
+    (fp #b0 #x80 #b00000000000000000000000))
+  (define-fun x30_1 () Float32
+    (fp #b1 #x7f #b00111100100011101111101))
+  (define-fun x18_2 () Float32
+    (fp #b0 #x7e #b10001000000101010011100))
+  (define-fun x15_2 () Float32
+    (fp #b0 #x7d #b01010011010011101000100))
+  (define-fun x17_2 () Float32
+    (fp #b0 #x7e #b10001000000101010011100))
+  (define-fun x3_1 () Float32
+    (_ +zero 8 24))
+  (define-fun x28_2 () Float32
+    (fp #b1 #x7b #b11100010001101101000001))
+  (define-fun x12_1 () Float32
+    (fp #b1 #x7c #b11000111011010010110010))
+  (define-fun x3_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x12_0 () Float32
+    (fp #b0 #x7c #b01010100110010100101100))
+  (define-fun x29_2 () Float32
+    (fp #b1 #x7b #b11100010001101101000001))
+  (define-fun x26_1 () Float32
+    (fp #b0 #x7d #b01011001110001110111011))
+  (define-fun x25_2 () Float32
+    (fp #b1 #x7c #b10011100100001100100000))
+  (define-fun x2_1 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun e0_2 () Bool
+    true)
+  (define-fun x21_2 () Float32
+    (fp #b1 #x7e #b11111101100100001110100))
+  (define-fun x48_1 () Float32
+    (fp #b0 #x80 #b11111001001000110000000))
+  (define-fun x40_1 () Float32
+    (_ +zero 8 24))
+  (define-fun x17_0 () Float32
+    (fp #b0 #x7d #b11110010000001100101010))
+  (define-fun e3_0 () Bool
+    false)
+  (define-fun e0_3 () Bool
+    false)
+  (define-fun x8_1 () Float32
+    (fp #b0 #x80 #b10000000000000000000000))
+  (define-fun x13_0 () Float32
+    (fp #b0 #x7c #b01010100110010100101100))
+  (define-fun x42_2 () Float32
+    (fp #b0 #x7e #b00000111111101111101001))
+  (define-fun x22_1 () Float32
+    (fp #b0 #x7d #b11010011011100110001100))
+  (define-fun x1_2 () Float32
+    (_ +zero 8 24))
+  (define-fun x1_1 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun x21_1 () Float32
+    (fp #b0 #x7e #b10011011000101111111001))
+  (define-fun x20_0 () Float32
+    (fp #b1 #x7d #b00101110010001111010010))
+  (define-fun x14_0 () Float32
+    (fp #b0 #x7c #b01010100110010100101100))
+  (define-fun x32_1 () Float32
+    (fp #b1 #x7f #b10100011110100011001100))
+  (define-fun x37_2 () Float32
+    (fp #b0 #x7d #b00010010000111000111100))
+  (define-fun x38_2 () Float32
+    (fp #b0 #x7e #b00000111111101111101001))
+  (define-fun x6_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x16_0 () Float32
+    (fp #b0 #x7d #b11110010000001100101010))
+  (define-fun x47_0 () Float32
+    (fp #b0 #x80 #b01101000110000110101010))
+  (define-fun x7_2 () Float32
+    (_ +zero 8 24))
+  (define-fun x30_2 () Float32
+    (fp #b1 #x7b #b11100010001101101000001))
+  (define-fun x39_2 () Float32
+    (fp #b0 #x7e #b01100111111111011011000))
+  (define-fun x25_1 () Float32
+    (fp #b0 #x7e #b01011110010000100010000))
+  (define-fun x29_1 () Float32
+    (fp #b1 #x7f #b00111100100011101111101))
+  (define-fun e2_0 () Bool
+    true)
+  (define-fun x13_2 () Float32
+    (fp #b0 #x7e #b00001000111101010001000))
+  (define-fun x16_2 () Float32
+    (fp #b0 #x7e #b10001000000101010011100))
+  (define-fun x50_0 () Float32
+    (fp #b1 #x80 #b11110010010110010011110))
+  (define-fun x16_1 () Float32
+    (fp #b1 #x7d #b10010110011000000101000))
+  (define-fun x33_1 () Float32
+    (fp #b1 #x7f #b10100011110100011001100))
+  (define-fun x58_0 () Int
+    1)
+  (define-fun x52_1 () Float32
+    (fp #b0 #x80 #b10111111100111001100001))
+  (define-fun x24_0 () Float32
+    (fp #b0 #x7d #b01100111110101101110110))
+  (define-fun x41_1 () Float32
+    (_ +zero 8 24))
+  (define-fun x20_2 () Float32
+    (fp #b1 #x7e #b01111110101001110101001))
+  (define-fun x56_0 () Int
+    1)
+  (define-fun x52_0 () Float32
+    (fp #b1 #x80 #b11001000011110001110110))
+  (define-fun x3_2 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun x45_2 () Float32
+    (fp #b1 #x7f #b11000011111110100110100))
+  (define-fun x25_0 () Float32
+    (fp #b0 #x7c #b11011111001101011001000))
+  (define-fun x11_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x51_1 () Float32
+    (fp #b0 #x80 #b11011101111101010000010))
+  (define-fun x21_0 () Float32
+    (fp #b1 #x7d #b10100110100000111100100))
+  (define-fun e3_3 () Bool
+    false)
+  (define-fun x15_1 () Float32
+    (fp #b0 #x7c #b00111101000100101010100))
+  (define-fun x51_0 () Float32
+    (fp #b1 #x80 #b11011011101010101101101))
+  (define-fun x40_0 () Float32
+    (fp #b0 #x7e #b11110111010000101100100))
+  (define-fun x39_1 () Float32
+    (fp #b1 #x7f #b10001100110101101011000))
+  (define-fun x24_1 () Float32
+    (fp #b0 #x7d #b01011001110001110111011))
+  (define-fun e0_0 () Bool
+    false)
+  (define-fun x18_1 () Float32
+    (fp #b1 #x7d #b10010110011000000101000))
+  (define-fun x4_2 () Float32
+    (_ +zero 8 24))
+  (define-fun e3_2 () Bool
+    false)
+  (define-fun x26_2 () Float32
+    (fp #b0 #x7a #b01111100100000000110000))
+  (define-fun x13_1 () Float32
+    (fp #b1 #x7c #b11000111011010010110010))
+  (define-fun x7_1 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun x8_2 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun x8_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x54_1 () Float32
+    (fp #b0 #x80 #b10111111100111001100001))
+  (define-fun x43_0 () Float32
+    (fp #b0 #x7f #b00001001110110011001001))
+  (define-fun x36_0 () Float32
+    (fp #b0 #x7e #b11110111010000101100100))
+  (define-fun e2_1 () Bool
+    true)
+  (define-fun x53_0 () Float32
+    (fp #b1 #x80 #b11000110101000000111100))
+  (define-fun x43_2 () Float32
+    (fp #b0 #x7e #b01100111111111011011000))
+  (define-fun x42_1 () Float32
+    (_ +zero 8 24))
+  (define-fun e3_1 () Bool
+    true)
+  (define-fun x38_1 () Float32
+    (fp #b1 #x7f #b10110010111101111100111))
+  (define-fun x36_2 () Float32
+    (fp #b0 #x7e #b00000111111101111101001))
+  (define-fun x31_0 () Float32
+    (fp #b0 #x7c #b11110011001111010100011))
+  (define-fun x9_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x7_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x0_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x36_1 () Float32
+    (fp #b1 #x7f #b10110010111101111100111))
+  (define-fun x34_1 () Float32
+    (fp #b1 #x7f #b10100011110100011001100))
+  (define-fun x23_1 () Float32
+    (fp #b0 #x7c #b11010011011100110001100))
+  (define-fun x32_2 () Float32
+    (fp #b1 #x7d #b00101111110010101101100))
+  (define-fun x1_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x18_0 () Float32
+    (fp #b0 #x7d #b11110010000001100101010))
+  (define-fun x14_2 () Float32
+    (fp #b0 #x7e #b00001000111101010001000))
+  (define-fun x0_2 () Float32
+    (_ +zero 8 24))
+  (define-fun x32_0 () Float32
+    (fp #b0 #x7c #b00101001010100001010000))
+  (define-fun e2_2 () Bool
+    false)
+  (define-fun x27_0 () Float32
+    (fp #b0 #x7d #b11111110111110101011111))
+  (define-fun x9_2 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun x19_0 () Float32
+    (fp #b0 #x7d #b10010011110000110011100))
+  (define-fun e1_1 () Bool
+    false)
+  (define-fun x4_1 () Float32
+    (fp #b0 #x80 #b00000000000000000000000))
+  (define-fun x2_2 () Float32
+    (_ +zero 8 24))
+  (define-fun x44_2 () Float32
+    (fp #b1 #x7f #b00011000101110001101100))
+  (define-fun x22_2 () Float32
+    (fp #b1 #x7e #b01111110101001110101001))
+  (define-fun x15_0 () Float32
+    (fp #b0 #x7b #b00110000100010000100000))
+  (define-fun x28_1 () Float32
+    (fp #b1 #x7f #b00111100100011101111101))
+  (define-fun x50_1 () Float32
+    (fp #b0 #x80 #b11111001001000110000000))
+  (define-fun x45_0 () Float32
+    (fp #b0 #x7f #b11111011010110011100100))
+  (define-fun x24_2 () Float32
+    (fp #b0 #x7a #b01111100100000000110000))
+  (define-fun x31_2 () Float32
+    (fp #b1 #x7b #b11100010001101101000001))
+  (define-fun x54_0 () Float32
+    (fp #b1 #x80 #b11001000011110001110110))
+  (define-fun x46_2 () Float32
+    (fp #b1 #x7f #b00011000101110001101100))
+  (define-fun x9_1 () Float32
+    (fp #b0 #x80 #b10000000000000000000000))
+  (define-fun x35_0 () Float32
+    (fp #b0 #x7c #b00101001010100001010000))
+  (define-fun x53_1 () Float32
+    (fp #b0 #x80 #b11000101001110000001111))
+  (define-fun x49_0 () Float32
+    (fp #b1 #x80 #b11110000100000001100100))
+  (define-fun x47_1 () Float32
+    (fp #b0 #x7c #b10100011100001011111011))
+  (define-fun x41_0 () Float32
+    (fp #b0 #x7e #b10111011001001001011011))
+  (define-fun x46_1 () Float32
+    (fp #b0 #x7c #b10100011100001011111011))
+  (define-fun x34_0 () Float32
+    (fp #b0 #x7c #b00101001010100001010000))
+  (define-fun e1_0 () Bool
+    true)
+  (define-fun e1_2 () Bool
+    true)
+  (define-fun x27_2 () Float32
+    (fp #b0 #x7d #b10101110001101110101111))
+  (define-fun x27_1 () Float32
+    (fp #b0 #x7b #b11000000001101111010100))
+  (define-fun x2_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x5_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x59_0 () Int
+    1)
+  (define-fun x44_1 () Float32
+    (fp #b0 #x7c #b10100011100001011111011))
+  (define-fun x5_2 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun x26_0 () Float32
+    (fp #b0 #x7d #b01100111110101101110110))
+  (define-fun x38_0 () Float32
+    (fp #b0 #x7e #b11110111010000101100100))
+  (define-fun x35_1 () Float32
+    (fp #b1 #x7f #b10100011110100011001100))
+  (define-fun x34_2 () Float32
+    (fp #b1 #x7d #b00101111110010101101100))
+  (define-fun x22_0 () Float32
+    (fp #b1 #x7d #b00101110010001111010010))
+  (define-fun x37_0 () Float32
+    (fp #b0 #x7e #b10111011001001001011011))
+  (define-fun x55_1 () Float32
+    (fp #b0 #x80 #b10100100011011101100011))
+  (define-fun x42_0 () Float32
+    (fp #b0 #x7e #b11110111010000101100100))
+  (define-fun x40_2 () Float32
+    (fp #b0 #x7e #b00000111111101111101001))
+  (define-fun x4_0 () Float32
+    (_ +zero 8 24))
+  (define-fun x20_1 () Float32
+    (fp #b0 #x7d #b11010011011100110001100))
+  (define-fun x45_1 () Float32
+    (fp #b0 #x7c #b10100011100001011111011))
+  (define-fun x5_1 () Float32
+    (fp #b0 #x80 #b00000000000000000000000))
+  (define-fun x11_2 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun x19_1 () Float32
+    (fp #b1 #x79 #b01000010001001001010000))
+  (define-fun x28_0 () Float32
+    (fp #b0 #x7c #b11110011001111010100011))
+  (define-fun x12_2 () Float32
+    (fp #b0 #x7e #b00001000111101010001000))
+  (define-fun x29_0 () Float32
+    (fp #b0 #x7c #b11110011001111010100011))
+  (define-fun x31_1 () Float32
+    (fp #b1 #x7f #b00111100100011101111101))
+  (define-fun x30_0 () Float32
+    (fp #b0 #x7c #b11110011001111010100011))
+  (define-fun x48_0 () Float32
+    (fp #b1 #x80 #b11110010010110010011110))
+  (define-fun x33_2 () Float32
+    (fp #b1 #x7d #b00101111110010101101100))
+  (define-fun x17_1 () Float32
+    (fp #b1 #x7d #b10010110011000000101000))
+  (define-fun x33_0 () Float32
+    (fp #b0 #x7c #b00101001010100001010000))
+  (define-fun x0_1 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun e1_3 () Bool
+    true)
+  (define-fun x23_2 () Float32
+    (fp #b1 #x7d #b01111110101001110101001))
+  (define-fun fp1 () Float32
+    (fp #b0 #x7f #b00000000000000000000000))
+  (define-fun fp0 () Float32
+    (fp #b0 #x00 #b00000000000000000000000))
+)
+((x0_0 (_ +zero 8 24)))
+((x0_1 (fp #b0 #x7f #b00000000000000000000000)))
+((x0_2 (_ +zero 8 24)))
+((x1_0 (_ +zero 8 24)))
+((x1_1 (fp #b0 #x7f #b00000000000000000000000)))
+((x1_2 (_ +zero 8 24)))
+((x2_0 (_ +zero 8 24)))
+((x2_1 (fp #b0 #x7f #b00000000000000000000000)))
+((x2_2 (_ +zero 8 24)))
+((x3_0 (_ +zero 8 24)))
+((x3_1 (_ +zero 8 24)))
+((x3_2 (fp #b0 #x7f #b00000000000000000000000)))
+((e0_0 false))
+((e0_1 true))
+((e0_2 true))
+((e0_3 false))
+((e1_0 true))
+((e1_1 false))
+((e1_2 true))
+((e1_3 true))
+((e2_0 true))
+((e2_1 true))
+((e2_2 false))
+((e2_3 false))
+((e3_0 false))
+((e3_1 true))
+((e3_2 false))
+((e3_3 false))
+((x56_0 1)
+ (x57_0 1)
+ (x58_0 1)
+ (x59_0 1))

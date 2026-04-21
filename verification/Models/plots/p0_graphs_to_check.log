@@ -1,0 +1,30 @@
+Graphs with 2 to 6 nodes from the dataset:
+
+Selected graph index: 0
+Graph with 2 nodes:
+Node features:
+tensor([[0., 0., 1.],
+        [1., 0., 0.]])
+
+Edge index:
+tensor([[0, 1],
+        [1, 0]])
+Selected graph index: 2
+Graph with 4 nodes:
+Node features:
+tensor([[0., 1., 0.],
+        [0., 1., 0.],
+        [0., 1., 0.],
+        [1., 0., 0.]])
+Edge index:
+tensor([[0, 0, 1, 1, 1, 2, 2, 3],
+        [1, 2, 0, 2, 3, 0, 1, 1]])
+Selected graph index: 3
+Graph with 3 nodes:
+Node features:
+tensor([[1., 0., 0.],
+        [0., 1., 0.],
+        [0., 0., 1.]])
+Edge index:
+tensor([[0, 0, 1, 1, 2, 2],
+        [1, 2, 0, 2, 0, 1]])

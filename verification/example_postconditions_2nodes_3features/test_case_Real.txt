@@ -1,0 +1,191 @@
+sat
+(
+  (define-fun e1_0 () Bool
+    true)
+  (define-fun e0_0 () Bool
+    false)
+  (define-fun x8_0 () Real
+    (/ 3942993881.0 10000000000.0))
+  (define-fun x22_2 () Real
+    (/ 961656563686353.0 1000000000000000.0))
+  (define-fun x15_0 () Real
+    (/ 676084701.0 5000000000.0))
+  (define-fun fp0 () Real
+    0.0)
+  (define-fun fp1 () Real
+    1.0)
+  (define-fun x14_2 () Real
+    (/ 41842837.0 500000000.0))
+  (define-fun x23_1 () Real
+    (/ 102422677.0 500000000.0))
+  (define-fun x1_0 () Real
+    1.0)
+  (define-fun x10_0 () Real
+    0.0)
+  (define-fun e1_1 () Bool
+    true)
+  (define-fun x6_0 () Real
+    (/ 743486881.0 10000000000.0))
+  (define-fun x10_2 () Real
+    0.0)
+  (define-fun x6_2 () Real
+    (/ 16567713.0 50000000.0))
+  (define-fun x4_1 () Real
+    0.0)
+  (define-fun x8_2 () Real
+    (/ 289823219.0 500000000.0))
+  (define-fun x10_1 () Real
+    0.0)
+  (define-fun x1_1 () Real
+    0.0)
+  (define-fun x0_0 () Real
+    0.0)
+  (define-fun x7_1 () Real
+    (- (/ 424894571.0 1000000000.0)))
+  (define-fun x4_2 () Real
+    1.0)
+  (define-fun x9_2 () Real
+    (- (/ 135354027.0 500000000.0)))
+  (define-fun e0_1 () Bool
+    false)
+  (define-fun x2_2 () Real
+    0.0)
+  (define-fun x0_2 () Real
+    1.0)
+  (define-fun x9_0 () Real
+    (/ 2969816571.0 10000000000.0))
+  (define-fun x7_0 () Real
+    (- (/ 229690429.0 10000000000.0)))
+  (define-fun x2_1 () Real
+    0.0)
+  (define-fun x6_1 () Real
+    (/ 7741037.0 50000000.0))
+  (define-fun x18_0 () Real
+    (/ 2155042761.0 2000000000.0))
+  (define-fun x4_0 () Real
+    1.0)
+  (define-fun x14_1 () Real
+    (- (/ 681755721.0 1000000000.0)))
+  (define-fun x17_0 () Real
+    (/ 1430509.0 39062500.0))
+  (define-fun x18_1 () Real
+    (- (/ 305899203.0 250000000.0)))
+  (define-fun x18_2 () Real
+    (/ 1278205879.0 1000000000.0))
+  (define-fun x27_0 () Real
+    (/ 215537712234496563722083.0 100000000000000000000000.0))
+  (define-fun x26_0 () Real
+    (- (/ 2103909622036004366093123.0 1000000000000000000000000.0)))
+  (define-fun x19_0 () Real
+    (- (/ 209054771.0 2000000000.0)))
+  (define-fun x27_1 () Real
+    (- (/ 49214306338277016992307.0 25000000000000000000000.0)))
+  (define-fun x26_1 () Real
+    (/ 9634505962285724760406311.0 5000000000000000000000000.0))
+  (define-fun x19_2 () Real
+    (/ 289890979.0 500000000.0))
+  (define-fun x19_1 () Real
+    (- (/ 3588754237.0 2500000000.0)))
+  (define-fun x15_2 () Real
+    (/ 41842837.0 500000000.0))
+  (define-fun x3_1 () Real
+    0.0)
+  (define-fun x17_2 () Real
+    (- (/ 47629397.0 500000000.0)))
+  (define-fun x12_1 () Real
+    (- (/ 11881879.0 100000000.0)))
+  (define-fun x3_0 () Real
+    1.0)
+  (define-fun x12_0 () Real
+    (/ 323300481.0 500000000.0))
+  (define-fun x21_2 () Real
+    (/ 289890979.0 500000000.0))
+  (define-fun x9_1 () Real
+    (- (/ 149844341.0 250000000.0)))
+  (define-fun x8_1 () Real
+    (- (/ 19662053.0 1000000000.0)))
+  (define-fun x13_0 () Real
+    (- (/ 438130073.0 1000000000.0)))
+  (define-fun x22_1 () Real
+    (/ 102422677.0 500000000.0))
+  (define-fun x1_2 () Real
+    0.0)
+  (define-fun x21_1 () Real
+    0.0)
+  (define-fun x20_0 () Real
+    (/ 2155042761.0 2000000000.0))
+  (define-fun x14_0 () Real
+    (/ 676084701.0 5000000000.0))
+  (define-fun x2_0 () Real
+    0.0)
+  (define-fun x5_0 () Real
+    1.0)
+  (define-fun x16_0 () Real
+    (/ 1430509.0 39062500.0))
+  (define-fun x7_2 () Real
+    (- (/ 64875029.0 125000000.0)))
+  (define-fun x5_2 () Real
+    1.0)
+  (define-fun x25_1 () Real
+    (- (/ 37979075188277016992307.0 25000000000000000000000.0)))
+  (define-fun x22_0 () Real
+    (/ 150366215319590711.0 50000000000000000.0))
+  (define-fun x13_2 () Real
+    (/ 472874403.0 500000000.0))
+  (define-fun x16_2 () Real
+    (- (/ 47629397.0 500000000.0)))
+  (define-fun x28_0 () Int
+    1)
+  (define-fun x20_1 () Real
+    0.0)
+  (define-fun x29_0 () Int
+    0)
+  (define-fun x16_1 () Real
+    (- (/ 1085115969.0 1000000000.0)))
+  (define-fun x5_1 () Real
+    0.0)
+  (define-fun x11_2 () Real
+    (/ 151930571.0 1000000000.0))
+  (define-fun x24_0 () Real
+    (- (/ 2431067596036004366093123.0 1000000000000000000000000.0)))
+  (define-fun x20_2 () Real
+    (/ 1278205879.0 1000000000.0))
+  (define-fun x3_2 () Real
+    1.0)
+  (define-fun x12_2 () Real
+    (/ 158763647.0 200000000.0))
+  (define-fun x25_0 () Real
+    (/ 182821914834496563722083.0 100000000000000000000000.0))
+  (define-fun x11_0 () Real
+    (- (/ 216946207.0 200000000.0)))
+  (define-fun x21_0 () Real
+    0.0)
+  (define-fun x15_1 () Real
+    (- (/ 681755721.0 1000000000.0)))
+  (define-fun x17_1 () Real
+    (- (/ 1085115969.0 1000000000.0)))
+  (define-fun x24_1 () Real
+    (/ 11881552192285724760406311.0 5000000000000000000000000.0))
+  (define-fun x23_0 () Real
+    (- (/ 5511719.0 2500000.0)))
+  (define-fun x23_2 () Real
+    (- (/ 461627401637947.0 500000000000000.0)))
+  (define-fun x13_1 () Real
+    (/ 1244958191.0 5000000000.0))
+  (define-fun x0_1 () Real
+    0.0)
+  (define-fun x11_1 () Real
+    (/ 1839052141.0 5000000000.0))
+)
+((x0_0 0.0))
+((x0_1 0.0))
+((x0_2 1.0))
+((x1_0 1.0))
+((x1_1 0.0))
+((x1_2 0.0))
+((e0_0 false))
+((e0_1 false))
+((e1_0 true))
+((e1_1 true))
+((x28_0 1)
+ (x29_0 0))

@@ -1,0 +1,2 @@
+DateTime,Nodes,NumConstants,ExecutionTime(s),CPU(%),Memory(%),dType, Activation
+2026-04-21T12:01:02.198543,2,30,0.091796875,61.4,86.5,Float32,ReLU

@@ -1,0 +1,28 @@
+Nodes: 4
+
+Node 0
+  Feature: 1
+  Label: 1
+  Status: SAT
+Node 1
+  Feature: 1
+  Label: 0
+  Status: UNSAT
+Node 2
+  Feature: 1
+  Label: 1
+  Status: SAT
+Node 3
+  Feature: 0
+  Label: 1
+  Status: SAT
+
+Edges:
+0 -> 1
+0 -> 2
+1 -> 0
+1 -> 2
+1 -> 3
+2 -> 0
+2 -> 1
+3 -> 1

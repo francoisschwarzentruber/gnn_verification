@@ -1,0 +1,14 @@
+Nodes: 2
+
+Node 0
+  Feature: 2
+  Label: 0
+  Status: UNSAT
+Node 1
+  Feature: 0
+  Label: 1
+  Status: SAT
+
+Edges:
+0 -> 1
+1 -> 0

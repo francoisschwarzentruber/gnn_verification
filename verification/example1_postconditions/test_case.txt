@@ -1,0 +1,13 @@
+unsat
+(error "line 622 column 11: model is not available")
+(error "line 624 column 18: model is not available")
+(error "line 625 column 17: model is not available")
+(error "line 626 column 17: model is not available")
+(error "line 627 column 17: model is not available")
+(error "line 628 column 17: model is not available")
+(error "line 629 column 17: model is not available")
+(error "line 631 column 18: model is not available")
+(error "line 632 column 17: model is not available")
+(error "line 633 column 17: model is not available")
+(error "line 634 column 17: model is not available")
+(error "line 636 column 25: model is not available")
